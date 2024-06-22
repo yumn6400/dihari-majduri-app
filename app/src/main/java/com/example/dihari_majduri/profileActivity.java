@@ -2,7 +2,9 @@ package com.example.dihari_majduri;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class profileActivity extends AppCompatActivity {
 
-
+private TextView errorMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,13 +28,43 @@ public class profileActivity extends AppCompatActivity {
         });
         initComponent();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private void initComponent()
     {
      String firstName= String.valueOf(findViewById(R.id.firstName));
      String lastName=String.valueOf(findViewById(R.id.lastName));
      String mobileNumber=String.valueOf(findViewById(R.id.mobileNumber));
      Button saveButton= findViewById(R.id.saveButton);
+     errorMessage=findViewById(R.id.errorMessage);
+     errorMessage.setVisibility(View.INVISIBLE);
      saveButton.setOnClickListener(view -> {
+
+         // Network call to check mobile number already exists or not
          Intent intent1 = new Intent(profileActivity.this, pinActivity.class);
          intent1.putExtra("firstName",firstName);
          intent1.putExtra("lastName",lastName);

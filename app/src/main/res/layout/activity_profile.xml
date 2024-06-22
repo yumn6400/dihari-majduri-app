@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="text"
-        android:text="First Name"
+        android:hint="First Name"
         android:layout_marginTop="@dimen/_60sdp"
         app:layout_constraintTop_toBottomOf="@+id/profile_img_view"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="text"
-        android:text="Last Name"
+        android:hint="Last Name"
        android:layout_marginTop="@dimen/_25sdp"
         app:layout_constraintTop_toBottomOf="@+id/firstName"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,12 +66,28 @@
         android:layout_width="@dimen/_200sdp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:text="Mobile Number"
+        android:hint="Mobile Number"
         android:layout_marginTop="@dimen/_25sdp"
         android:inputType="phone"
         app:layout_constraintTop_toBottomOf="@+id/lastName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginLeft="@dimen/_100sdp"
+        android:text="Mobile Number already exists"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/_12ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.41"
+        app:layout_constraintTop_toBottomOf="@id/mobileNumber"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
     <Button
         android:id="@+id/saveButton"
