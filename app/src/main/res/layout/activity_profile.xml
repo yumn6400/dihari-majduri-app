@@ -94,7 +94,7 @@
         android:layout_width="@dimen/_180sdp"
         android:layout_height="@dimen/_40sdp"
         android:layout_marginTop="68dp"
-        android:text="Save"
+        android:text="Next"
         app:layout_constraintTop_toBottomOf="@+id/mobileNumber"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

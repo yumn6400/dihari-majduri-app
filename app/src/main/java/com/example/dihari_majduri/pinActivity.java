@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.inputmethod.InputMethodManager;
+
 import android.widget.EditText;
 import android.widget.TextView;
 

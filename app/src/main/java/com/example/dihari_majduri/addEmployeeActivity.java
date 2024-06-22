@@ -1,6 +1,8 @@
 package com.example.dihari_majduri;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,7 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class addEmployeeActivity extends AppCompatActivity {
-
+private Button saveButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,5 +33,12 @@ public class addEmployeeActivity extends AppCompatActivity {
         backArrow.setOnClickListener(view -> finish());
         TextView activityName = findViewById(R.id.tvActivityName);
         activityName.setText("Add Employee");
+        saveButton=findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(view -> {
+            // Network call to check mobile number already exists or not
+            Intent intent1 = new Intent(addEmployeeActivity.this, employeeActivity.class);
+            startActivity(intent1);
+            finish();
+        });
     }
 }
