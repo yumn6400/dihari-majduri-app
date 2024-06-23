@@ -12,7 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class addEmployeeActivity extends AppCompatActivity {
+public class AddEmployeeActivity extends AppCompatActivity {
 private Button saveButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,7 @@ private Button saveButton;
         saveButton=findViewById(R.id.saveButton);
         saveButton.setOnClickListener(view -> {
             // Network call to check mobile number already exists or not
-            Intent intent1 = new Intent(addEmployeeActivity.this, employeeActivity.class);
+            Intent intent1 = new Intent(AddEmployeeActivity.this, EmployeeActivity.class);
             startActivity(intent1);
             finish();
         });

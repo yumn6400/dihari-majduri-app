@@ -18,14 +18,12 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
     private List<Employee> employeeList;
 
     public EmployeeAdapter(List<Employee> employeeList) {
-        System.out.println("Employee adaptor parameterized constructor got called");
         this.employeeList = employeeList;
     }
 
     @NonNull
     @Override
     public EmployeeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        System.out.println("On create view holder method got called");
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_employees, parent, false);
         return new EmployeeViewHolder(view);
@@ -33,7 +31,6 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
 
     @Override
     public void onBindViewHolder(@NonNull EmployeeViewHolder holder, int position) {
-        System.out.println("On bind view holder method got called");
         Employee employee = employeeList.get(position);
         holder.employeeName.setText(employee.getName());
         holder.employeeMobile.setText(employee.getMobile());
@@ -41,7 +38,6 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
 
     @Override
     public int getItemCount() {
-        System.out.println("Size :"+ employeeList.size());
         return employeeList.size();
     }
 
@@ -52,7 +48,6 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
 
         public EmployeeViewHolder(@NonNull View itemView) {
             super(itemView);
-            System.out.println("employee view holder method got called");
             employeeName = itemView.findViewById(R.id.employeeName);
             employeeMobile = itemView.findViewById(R.id.employeeMobile);
         }

@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PinActivity">
+    tools:context=".LoginActivity">
 
 
     <TextView
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_15sdp"
         android:layout_marginTop="200dp"
-        android:text="Create new 4 digit MPIN"
+        android:text="Enter 4 digit MPIN"
         android:textColor="@android:color/black"
         android:textSize="@dimen/_18ssp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +83,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_100sdp"
         android:layout_marginTop="12dp"
-        android:text="Pin not match"
+        android:text="Invalid Pin"
         android:textColor="@android:color/black"
         android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toEndOf="parent"

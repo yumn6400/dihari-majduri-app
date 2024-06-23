@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.inputmethod.InputMethodManager;
-
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -16,8 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class pinActivity extends AppCompatActivity {
-
+public class LoginActivity extends AppCompatActivity {
     private String firstName;
     private String lastName;
     private String mobileNumber;
@@ -29,25 +27,18 @@ public class pinActivity extends AppCompatActivity {
     private TextView errorMessage;
     private String pin;
     private int pinCount=0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_pin);
+        setContentView(R.layout.activity_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        Intent intent=getIntent();
-        this.firstName=intent.getStringExtra("firstName");
-        this.lastName=intent.getStringExtra("lastName");
-        this.mobileNumber=intent.getStringExtra("mobileNumber");
         initComponent();
     }
-
     private void initComponent()
     {
         pin1=findViewById(R.id.pin1);
@@ -58,10 +49,10 @@ public class pinActivity extends AppCompatActivity {
         errorMessage=findViewById(R.id.errorMessage);
         errorMessage.setVisibility(TextView.INVISIBLE);
 
-        pin1.addTextChangedListener(new PinValidator(pin1,pin2,null));
-        pin2.addTextChangedListener(new PinValidator(pin2,pin3,pin1));
-        pin3.addTextChangedListener(new PinValidator(pin3,pin4,pin2));
-        pin4.addTextChangedListener(new PinValidator(pin4,null,pin3));
+        pin1.addTextChangedListener(new LoginActivity.PinValidator(pin1,pin2,null));
+        pin2.addTextChangedListener(new LoginActivity.PinValidator(pin2,pin3,pin1));
+        pin3.addTextChangedListener(new LoginActivity.PinValidator(pin3,pin4,pin2));
+        pin4.addTextChangedListener(new LoginActivity.PinValidator(pin4,null,pin3));
     }
 
 
@@ -91,11 +82,11 @@ public class pinActivity extends AppCompatActivity {
     }
 
 
-    public void addEmployee()
+    public void loginEmployer()
     {
-    System.out.println("****************************Generated PIN :"+pin);
-    // Network call to send data to server
-        Intent intent1 = new Intent(pinActivity.this, dashboardActivity.class);
+        System.out.println("****************************Generated PIN :"+pin);
+        // Network call to send data to server
+        Intent intent1 = new Intent(LoginActivity.this, DashboardActivity.class);
         intent1.putExtra("firstName",firstName);
         intent1.putExtra("lastName",lastName);
         intent1.putExtra("mobileNumber",mobileNumber);
@@ -135,28 +126,22 @@ public class pinActivity extends AppCompatActivity {
                 String pin2Str=pin2.getText().toString().trim();
                 String pin3Str=pin3.getText().toString().trim();
                 String pin4Str=pin4.getText().toString().trim();
-                if(pin==null)
+                pin=pin1Str+pin2Str+pin3Str+pin4Str;
+                //If pin not equal to "1111"
+                if(!pin.equals("1111"))
                 {
-                    pin=pin1Str+pin2Str+pin3Str+pin4Str;
+                    errorMessage.setVisibility(TextView.VISIBLE);
                     System.out.println("PIN :"+pin);
                     pin1.setText("");
                     pin2.setText("");
                     pin3.setText("");
                     pin4.setText("");
                     focusAndShowKeyboard(pin1);
-                    pinEntryMessage.setText("Confirm MPIN");
                     pinCount=0;
                 }else {
-                    if(!pin.equals(pin1Str+pin2Str+pin3Str+pin4Str))
-                    {
-                        errorMessage.setVisibility(TextView.VISIBLE);
-                    }
-                    else {
                         errorMessage.setVisibility(TextView.INVISIBLE);
                         closeKeyboard();
-                        addEmployee();
-                    }
-
+                        loginEmployer();
                 }
 
             }

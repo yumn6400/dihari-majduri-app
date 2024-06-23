@@ -13,25 +13,34 @@
         android:theme="@style/Theme.DihariMajduri"
         tools:targetApi="31">
         <activity
-            android:name=".addEmployeeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".cropActivity"
-            android:exported="false" />
-        <activity
-            android:name=".employeeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".dashboardActivity"
-            android:exported="false" />
-        <activity
-            android:name=".pinActivity"
-            android:exported="false" />
-        <activity
-            android:name=".profileActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddCropActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEmployeeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CropActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EmployeeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -2,8 +2,6 @@ package com.example.dihari_majduri;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,24 +13,21 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.dihari_majduri.adapter.EmployeeAdapter;
-import com.example.dihari_majduri.pojo.Employee;
+import com.example.dihari_majduri.adapter.CropAdapter;
+import com.example.dihari_majduri.pojo.Crop;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class employeeActivity extends AppCompatActivity  {
-
-
-    private ExtendedFloatingActionButton addEmployee;
+public class CropActivity extends AppCompatActivity {
+    private ExtendedFloatingActionButton addCrop;
     private RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_employee);
+        setContentView(R.layout.activity_crop);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -40,7 +35,6 @@ public class employeeActivity extends AppCompatActivity  {
         });
         initComponent();
     }
-
     private void initComponent()
     {
         ImageView backArrow = findViewById(R.id.ivToolbarBack);
@@ -49,10 +43,10 @@ public class employeeActivity extends AppCompatActivity  {
         recyclerView=findViewById(R.id.recyclerView);
         activityName.setText("Employees");
 
-        addEmployee = findViewById(R.id.addEmployee);
-        addEmployee.setOnClickListener(view -> {
+        addCrop = findViewById(R.id.addCrop);
+        addCrop.setOnClickListener(view -> {
             // Network call to check mobile number already exists or not
-            Intent intent1 = new Intent(employeeActivity.this, addEmployeeActivity.class);
+            Intent intent1 = new Intent(CropActivity.this, AddCropActivity.class);
             startActivity(intent1);
             finish();
         });
@@ -68,18 +62,16 @@ public class employeeActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
-System.out.println("On resume employee activity method got called");
-        List<Employee> employeeList = new ArrayList<>();
-        employeeList.add(new Employee("John Doe", "1234567890"));
-        employeeList.add(new Employee("Jane Smith", "0987654321"));
+        List<Crop> cropList = new ArrayList<>();
+        cropList.add(new Crop("soyabean",null));
 
         // Set up adapter
-        EmployeeAdapter employeeAdapter = new EmployeeAdapter(employeeList);
+        CropAdapter cropAdapter = new CropAdapter(cropList);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(employeeActivity.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(CropActivity.this));
 
-        recyclerView.setAdapter(employeeAdapter);
-        
+        recyclerView.setAdapter(cropAdapter);
+
     }
 
     @Override
@@ -96,7 +88,5 @@ System.out.println("On resume employee activity method got called");
     protected void onDestroy() {
         super.onDestroy();
     }
-
-
 
 }

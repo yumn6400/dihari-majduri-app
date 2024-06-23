@@ -5,13 +5,13 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DashboardActivity">
+    tools:context=".SplashActivity">
 
     <Button
-        android:id="@+id/employeeButton"
+        android:id="@+id/profileButton"
         android:layout_width="@dimen/_200sdp"
         android:layout_height="wrap_content"
-        android:text="Employee"
+        android:text="Profile Activity"
         android:textSize="@dimen/_20ssp"
         android:layout_marginTop="@dimen/_200sdp"
         app:layout_constraintTop_toTopOf="parent"
@@ -19,13 +19,13 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/cropButton"
+        android:id="@+id/pinButton"
         android:layout_width="@dimen/_200sdp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_22sdp"
-        android:text="Crop"
+        android:text="Login Activity"
         android:textSize="@dimen/_20ssp"
-        app:layout_constraintTop_toBottomOf="@+id/employeeButton"
+        app:layout_constraintTop_toBottomOf="@+id/profileButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,12 +8,11 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class profileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
 
 private TextView errorMessage;
     @Override
@@ -65,7 +64,7 @@ private TextView errorMessage;
      saveButton.setOnClickListener(view -> {
 
          // Network call to check mobile number already exists or not
-         Intent intent1 = new Intent(profileActivity.this, pinActivity.class);
+         Intent intent1 = new Intent(ProfileActivity.this, PinActivity.class);
          intent1.putExtra("firstName",firstName);
          intent1.putExtra("lastName",lastName);
          intent1.putExtra("mobileNumber",mobileNumber);

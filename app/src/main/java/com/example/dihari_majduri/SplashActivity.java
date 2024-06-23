@@ -10,47 +10,38 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class dashboardActivity extends AppCompatActivity {
+public class SplashActivity extends AppCompatActivity {
 
-    private Button employeeButton;
-    private Button cropButton;
-    private String firstName;
-    private String lastName;
-    private String mobileNumber;
+    private Button profileButton;
+    private Button pinButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_dashboard);
+        setContentView(R.layout.activity_splash);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
         Intent intent=getIntent();
-        this.firstName=intent.getStringExtra("firstName");
-        this.lastName=intent.getStringExtra("lastName");
-        this.mobileNumber=intent.getStringExtra("mobileNumber");
+
         initComponent();
     }
 
     private void initComponent()
     {
-        employeeButton=findViewById(R.id.employeeButton);
-        cropButton=findViewById(R.id.cropButton);
-        employeeButton.setOnClickListener(view -> {
-            Intent intent1 = new Intent(dashboardActivity.this, employeeActivity.class);
-            intent1.putExtra("firstName",firstName);
-            intent1.putExtra("lastName",lastName);
-            intent1.putExtra("mobileNumber",mobileNumber);
+        profileButton=findViewById(R.id.profileButton);
+        pinButton=findViewById(R.id.pinButton);
+        profileButton.setOnClickListener(view -> {
+            Intent intent1 = new Intent(SplashActivity.this, ProfileActivity.class);
+
             startActivity(intent1);
             finish();
         });
-        cropButton.setOnClickListener(view->{
-            Intent intent1 = new Intent(dashboardActivity.this, cropActivity.class);
-            intent1.putExtra("firstName",firstName);
-            intent1.putExtra("lastName",lastName);
-            intent1.putExtra("mobileNumber",mobileNumber);
+        pinButton.setOnClickListener(view->{
+            Intent intent1 = new Intent(SplashActivity.this, LoginActivity.class);
             startActivity(intent1);
             finish();
         });
