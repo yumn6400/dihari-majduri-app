@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_300sdp"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Spinner
+        android:id="@+id/spinnerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:hint="Select Crop" />
+
+    <Spinner
+        android:id="@+id/spinnerCropWorkType"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:hint="Select Crop Work Type" />
+
+    <TextView
+        android:id="@+id/textViewSelectDate"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:text="Select Date"
+        android:padding="10dp"
+        android:textSize="16sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutEmployee"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:hint="Select Employee">
+        <MultiAutoCompleteTextView
+            android:id="@+id/multiAutoCompleteTextViewEmployee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:text="Save" />
+</LinearLayout>

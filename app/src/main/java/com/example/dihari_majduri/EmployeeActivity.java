@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,10 @@ public class EmployeeActivity extends AppCompatActivity  {
 
     private ExtendedFloatingActionButton addEmployee;
     private RecyclerView recyclerView;
+    private TextView homeButton ;
+    private TextView employeeButton;
+    private TextView moreButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +52,25 @@ public class EmployeeActivity extends AppCompatActivity  {
         recyclerView=findViewById(R.id.recyclerView);
         activityName.setText("Employees");
 
+        homeButton= findViewById(R.id.homeButton);
+        employeeButton= findViewById(R.id.employeeButton);
+        moreButton= findViewById(R.id.moreButton);
+        employeeButton.setOnClickListener(view -> {
+            Toast.makeText(EmployeeActivity.this, "Employee Clicked", Toast.LENGTH_SHORT).show();
+        });
+
+        homeButton.setOnClickListener(view-> {
+            Intent intent1 = new Intent(EmployeeActivity.this, DashboardActivity.class);
+            startActivity(intent1);
+            finish();
+        });
+
+
+
+        moreButton.setOnClickListener(View->
+        {
+            Toast.makeText(EmployeeActivity.this, "More Clicked", Toast.LENGTH_SHORT).show();
+        });
         addEmployee = findViewById(R.id.addEmployee);
         addEmployee.setOnClickListener(view -> {
             // Network call to check mobile number already exists or not
@@ -71,7 +95,7 @@ public class EmployeeActivity extends AppCompatActivity  {
         employeeList.add(new Employee("Jane Smith", "0987654321"));
 
         // Set up adapter
-        EmployeeAdapter employeeAdapter = new EmployeeAdapter(employeeList);
+        EmployeeAdapter employeeAdapter = new EmployeeAdapter(this,employeeList);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(EmployeeActivity.this));
 

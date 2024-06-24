@@ -1,6 +1,5 @@
 package com.example.dihari_majduri.pojo;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class Crop {

@@ -57,6 +57,7 @@
         android:layout_marginTop="@dimen/_2sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchBox"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         tools:listitem="@layout/item_employees" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -73,6 +74,20 @@
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         android:layout_marginEnd="120dp" />
 
+
+    <include
+        android:id="@+id/bottomNavigation"
+        layout="@layout/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:elevation="4dp"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
