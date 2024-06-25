@@ -14,6 +14,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    private TextView firstNameTextView;
+    private TextView lastNameTextView;
+    private TextView mobileNumberTextView;
+
+    private String firstName;
+    private String lastName;
+    private String mobileNumber;
 private TextView errorMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +62,21 @@ private TextView errorMessage;
 
     private void initComponent()
     {
-     String firstName= String.valueOf(findViewById(R.id.firstName));
-     String lastName=String.valueOf(findViewById(R.id.lastName));
-     String mobileNumber=String.valueOf(findViewById(R.id.mobileNumber));
+      firstNameTextView= findViewById(R.id.firstName);
+      lastNameTextView=findViewById(R.id.lastName);
+      mobileNumberTextView=findViewById(R.id.mobileNumber);
+
      Button saveButton= findViewById(R.id.saveButton);
      errorMessage=findViewById(R.id.errorMessage);
      errorMessage.setVisibility(View.INVISIBLE);
      saveButton.setOnClickListener(view -> {
+
+         firstName=firstNameTextView.getText().toString().trim();
+         lastName=lastNameTextView.getText().toString().trim();
+         mobileNumber=mobileNumberTextView.getText().toString().trim();
+         System.out.println("***************First name : "+firstName);
+         System.out.println("*************Last Name : "+lastName);
+         System.out.println("******************Mobile number :"+mobileNumber);
 
          // Network call to check mobile number already exists or not
          Intent intent1 = new Intent(ProfileActivity.this, PinActivity.class);

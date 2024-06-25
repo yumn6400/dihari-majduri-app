@@ -58,31 +58,19 @@
         tools:listitem="@layout/item_dihari" />
 
 
-
- <!--   <Button
-        android:id="@+id/cropButton"
-        android:layout_width="@dimen/_200sdp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_22sdp"
-        android:text="Crop"
-        android:textSize="@dimen/_20ssp"
-        app:layout_constraintTop_toBottomOf="@+id/employeeButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/> -->
-
-
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/addNewDihari"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="156dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="100dp"
         android:contentDescription="Add New"
         android:drawableStart="@drawable/add_symbol"
         android:text="Add New"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_chainStyle="spread_inside" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        android:layout_marginEnd="140dp" />
 
     <include
         android:id="@+id/bottomNavigation"

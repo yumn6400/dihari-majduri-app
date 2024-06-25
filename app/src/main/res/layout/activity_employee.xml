@@ -7,9 +7,9 @@
     android:layout_height="match_parent"
     tools:context=".EmployeeActivity">
 
-    <include
+    <!--<include
         android:id="@+id/includedToolbar"
-        layout="@layout/toolbar" />
+        layout="@layout/toolbar" /> -->
 
     <RelativeLayout
         android:id="@+id/searchBox"

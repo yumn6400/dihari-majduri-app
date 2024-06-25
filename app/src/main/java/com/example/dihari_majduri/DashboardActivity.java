@@ -73,14 +73,7 @@ public class DashboardActivity extends AppCompatActivity {
             startActivity(intent1);
             finish();
         });
-      /*  cropButton.setOnClickListener(view->{
-            Intent intent1 = new Intent(DashboardActivity.this, CropActivity.class);
-            intent1.putExtra("firstName",firstName);
-            intent1.putExtra("lastName",lastName);
-            intent1.putExtra("mobileNumber",mobileNumber);
-            startActivity(intent1);
-            finish();
-        }); */
+
 
         homeButton.setOnClickListener(view-> {
                 Toast.makeText(DashboardActivity.this, "Home Clicked", Toast.LENGTH_SHORT).show();

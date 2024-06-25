@@ -16,6 +16,20 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.pojo.Employer;
+import com.example.dihari_majduri.network.pojo.NetworkSettings;
+import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class PinActivity extends AppCompatActivity {
 
     private String firstName;
@@ -90,11 +104,69 @@ public class PinActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    public void networkCall()
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        // Create an Employer object
+        Employer employer = new Employer(this.firstName, this.lastName, this.mobileNumber, this.pin);
+
+        // Serialize the Employer object to JSON
+        Gson gson = new Gson();
+        String entityJSONString = gson.toJson(employer);
+        System.out.println("*******JSON STRING :"+entityJSONString);
+        // Create a JSONObject from the JSON string
+        JSONObject entityJSON = null;
+        try {
+            entityJSON = new JSONObject(entityJSONString);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Define the URL to send the request to
+        String url = NetworkSettings.EMPLOYER_SERVER;
+
+        // Create a JsonObjectRequest
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST, url, entityJSON,
+                response->{
+                        System.out.println("**********Response :"+response);
+                        // Handle the server's response here
+
+                },
+                error-> {
+                        System.out.println("**********Response Error:"+error);
+                        generateServerError(error);
+                    }
+                ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json");
+                return params;
+            }
+        };
+
+        // Set retry policy
+        jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
+
+        // Add the request to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    // Method to handle server errors
+    private void generateServerError(VolleyError error) {
+        // Handle the error response here
+        error.printStackTrace();
+    }
 
     public void addEmployer()
     {
     System.out.println("****************************Generated PIN :"+pin);
     // Network call to send data to server
+    networkCall();
+
         Intent intent1 = new Intent(PinActivity.this, DashboardActivity.class);
         intent1.putExtra("firstName",firstName);
         intent1.putExtra("lastName",lastName);
