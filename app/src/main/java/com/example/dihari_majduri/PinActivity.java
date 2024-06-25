@@ -21,7 +21,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.dihari_majduri.pojo.Employer;
+import com.example.dihari_majduri.pojo.Owner;
 import com.example.dihari_majduri.network.pojo.NetworkSettings;
 import com.google.gson.Gson;
 
@@ -109,11 +109,11 @@ public class PinActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         // Create an Employer object
-        Employer employer = new Employer(this.firstName, this.lastName, this.mobileNumber, this.pin);
+        Owner owner = new Owner(this.firstName, this.lastName, this.mobileNumber, this.pin);
 
         // Serialize the Employer object to JSON
         Gson gson = new Gson();
-        String entityJSONString = gson.toJson(employer);
+        String entityJSONString = gson.toJson(owner);
         System.out.println("*******JSON STRING :"+entityJSONString);
         // Create a JSONObject from the JSON string
         JSONObject entityJSON = null;
@@ -125,7 +125,7 @@ public class PinActivity extends AppCompatActivity {
         }
 
         // Define the URL to send the request to
-        String url = NetworkSettings.EMPLOYER_SERVER;
+        String url = NetworkSettings.LABOUR_SERVER;
 
         // Create a JsonObjectRequest
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(

@@ -12,13 +12,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class EditEmployeeActivity extends AppCompatActivity {
+public class EditLabourActivity extends AppCompatActivity {
     private Button saveButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_edit_employee);
+        setContentView(R.layout.activity_edit_labour);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -36,7 +36,7 @@ public class EditEmployeeActivity extends AppCompatActivity {
         saveButton=findViewById(R.id.saveButton);
         saveButton.setOnClickListener(view -> {
             // Network call to check mobile number already exists or not
-            Intent intent1 = new Intent(EditEmployeeActivity.this, EmployeeActivity.class);
+            Intent intent1 = new Intent(EditLabourActivity.this, LabourActivity.class);
             startActivity(intent1);
             finish();
         });

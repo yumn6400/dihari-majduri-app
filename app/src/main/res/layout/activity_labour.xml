@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EmployeeActivity">
+    tools:context=".LabourActivity">
 
     <!--<include
         android:id="@+id/includedToolbar"
@@ -58,7 +58,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchBox"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
-        tools:listitem="@layout/item_employees" />
+        tools:listitem="@layout/item_labours" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/addEmployee"

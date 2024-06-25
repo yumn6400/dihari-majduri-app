@@ -1,11 +1,11 @@
 package com.example.dihari_majduri.pojo;
 
-public class Employee {
+public class Labour {
     private String name;
     private String mobile;
 
-    public Employee(){}
-    public Employee(String name, String mobile) {
+    public Labour(){}
+    public Labour(String name, String mobile) {
         this.name = name;
         this.mobile = mobile;
     }

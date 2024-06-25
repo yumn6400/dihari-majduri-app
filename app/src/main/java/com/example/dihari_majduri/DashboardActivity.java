@@ -66,7 +66,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         employeeButton.setOnClickListener(view -> {
-            Intent intent1 = new Intent(DashboardActivity.this, EmployeeActivity.class);
+            Intent intent1 = new Intent(DashboardActivity.this, LabourActivity.class);
             intent1.putExtra("firstName",firstName);
             intent1.putExtra("lastName",lastName);
             intent1.putExtra("mobileNumber",mobileNumber);

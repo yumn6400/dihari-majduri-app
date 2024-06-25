@@ -1,13 +1,13 @@
 package com.example.dihari_majduri.pojo;
 
-public class Employer {
+public class Owner {
     private String firstName;
     private String lastName;
     private String mobileNumber;
     private String pin;
 
     // Constructor
-    public Employer(String firstName, String lastName, String mobileNumber, String pin) {
+    public Owner(String firstName, String lastName, String mobileNumber, String pin) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.mobileNumber = mobileNumber;

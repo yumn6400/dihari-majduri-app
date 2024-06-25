@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.dihari_majduri.EmployeeActivity;
+import com.example.dihari_majduri.LabourActivity;
 import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.pojo.CropWorkDetails;
 
@@ -69,7 +69,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
                 CropWorkDetails cropWorkDetails = cropWorkDetailsList.get(position);
-                Intent intent = new Intent(context, EmployeeActivity.class);
+                Intent intent = new Intent(context, LabourActivity.class);
                 intent.putExtra("cropName", cropWorkDetails.getCropName());
                 intent.putExtra("cropWorkType", cropWorkDetails.getCropWorkType());
                 intent.putExtra("dateOfWork", cropWorkDetails.getDate());

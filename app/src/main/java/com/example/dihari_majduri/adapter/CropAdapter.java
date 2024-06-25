@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.pojo.Crop;
-import com.example.dihari_majduri.pojo.Employee;
 
 import java.util.List;
 

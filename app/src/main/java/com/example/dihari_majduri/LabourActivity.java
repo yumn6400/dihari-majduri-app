@@ -16,39 +16,36 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.dihari_majduri.adapter.EmployeeAdapter;
+import com.example.dihari_majduri.adapter.LabourAdapter;
 import com.example.dihari_majduri.network.pojo.NetworkSettings;
-import com.example.dihari_majduri.pojo.Employee;
+import com.example.dihari_majduri.pojo.Labour;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 
-public class EmployeeActivity extends AppCompatActivity  {
+public class LabourActivity extends AppCompatActivity  {
     private ExtendedFloatingActionButton addEmployee;
     private RecyclerView recyclerView;
     private TextView homeButton ;
     private TextView employeeButton;
     private TextView moreButton;
 
-    private List<Employee> employees;
+    private List<Labour> labour;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_employee);
+        setContentView(R.layout.activity_labour);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -59,33 +56,32 @@ public class EmployeeActivity extends AppCompatActivity  {
 
     private void initComponent()
     {
-        employees=new ArrayList<>();
+        labour =new ArrayList<>();
         recyclerView=findViewById(R.id.recyclerView);
         homeButton= findViewById(R.id.homeButton);
         employeeButton= findViewById(R.id.employeeButton);
         moreButton= findViewById(R.id.moreButton);
         employeeButton.setOnClickListener(view -> {
-            Toast.makeText(EmployeeActivity.this, "Employee Clicked", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LabourActivity.this, "Employee Clicked", Toast.LENGTH_SHORT).show();
         });
 
         homeButton.setOnClickListener(view-> {
-            Intent intent1 = new Intent(EmployeeActivity.this, DashboardActivity.class);
+            Intent intent1 = new Intent(LabourActivity.this, DashboardActivity.class);
             startActivity(intent1);
             finish();
         });
 
         moreButton.setOnClickListener(View->
         {
-            Toast.makeText(EmployeeActivity.this, "More Clicked", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LabourActivity.this, "More Clicked", Toast.LENGTH_SHORT).show();
         });
         addEmployee = findViewById(R.id.addEmployee);
         addEmployee.setOnClickListener(view -> {
             // Network call to check mobile number already exists or not
-            Intent intent1 = new Intent(EmployeeActivity.this, AddEmployeeActivity.class);
+            Intent intent1 = new Intent(LabourActivity.this, AddLabourActivity.class);
             startActivity(intent1);
             finish();
         });
-        getAllEmployees();
     }
 
     @Override
@@ -96,21 +92,14 @@ public class EmployeeActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
-      //  List<Employee> employeeList = new ArrayList<>();
-     //   employeeList.add(new Employee("John Doe", "1234567890"));
-     //   employeeList.add(new Employee("Jane Smith", "0987654321"));
-        // Set up adapter
         getAllEmployees();
-      //  EmployeeAdapter employeeAdapter = new EmployeeAdapter(this,employees);
-      //  recyclerView.setLayoutManager(new LinearLayoutManager(EmployeeActivity.this));
-      //  recyclerView.setAdapter(employeeAdapter);
     }
 
-    public void setEmployeesData(List<Employee> list)
+    public void setEmployeesData(List<Labour> list)
     {
-        EmployeeAdapter employeeAdapter = new EmployeeAdapter(this,list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(EmployeeActivity.this));
-        recyclerView.setAdapter(employeeAdapter);
+        LabourAdapter labourAdapter = new LabourAdapter(this,list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(LabourActivity.this));
+        recyclerView.setAdapter(labourAdapter);
     }
 
     public void getAllEmployees()
@@ -119,7 +108,7 @@ public class EmployeeActivity extends AppCompatActivity  {
 
 
         // Define the URL to send the request to
-        String url = NetworkSettings.EMPLOYEE_SERVER;
+        String url = NetworkSettings.LABOUR_SERVER;
 
         // Create a JsonObjectRequest
         StringRequest stringRequest=new StringRequest(
@@ -132,16 +121,16 @@ public class EmployeeActivity extends AppCompatActivity  {
                         if ((boolean) jsonObject.get("success")) {
                             JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("result")));
                             JSONObject job;
-                            Employee employee;
+                            Labour labour;
                             for (int i = 0; i < jsonArray.length(); i++)
                             {
                                 job = (JSONObject) jsonArray.get(i);
-                                employee=new Employee();
-                                employee.setName(job.getString("name"));
-                                employee.setMobile(job.getString("mobileNumber"));
-                                employees.add(employee);
+                                labour =new Labour();
+                                labour.setName(job.getString("name"));
+                                labour.setMobile(job.getString("mobileNumber"));
+                                LabourActivity.this.labour.add(labour);
                             }
-                            setEmployeesData(employees);
+                            setEmployeesData(LabourActivity.this.labour);
                         }
                     }catch(Exception e)
                     {
