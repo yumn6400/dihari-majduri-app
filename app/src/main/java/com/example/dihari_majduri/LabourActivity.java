@@ -19,7 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.adapter.LabourAdapter;
-import com.example.dihari_majduri.network.pojo.NetworkSettings;
+import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.pojo.Labour;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
@@ -92,7 +92,7 @@ public class LabourActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
-        getAllEmployees();
+        getAllLabours();
     }
 
     public void setEmployeesData(List<Labour> list)
@@ -102,7 +102,7 @@ public class LabourActivity extends AppCompatActivity  {
         recyclerView.setAdapter(labourAdapter);
     }
 
-    public void getAllEmployees()
+    public void getAllLabours()
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
@@ -126,8 +126,9 @@ public class LabourActivity extends AppCompatActivity  {
                             {
                                 job = (JSONObject) jsonArray.get(i);
                                 labour =new Labour();
+                                labour.setId(job.getInt("id"));
                                 labour.setName(job.getString("name"));
-                                labour.setMobile(job.getString("mobileNumber"));
+                                labour.setMobileNumber(job.getString("mobileNumber"));
                                 LabourActivity.this.labour.add(labour);
                             }
                             setEmployeesData(LabourActivity.this.labour);

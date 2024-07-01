@@ -22,7 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.pojo.Owner;
-import com.example.dihari_majduri.network.pojo.NetworkSettings;
+import com.example.dihari_majduri.common.NetworkSettings;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -125,7 +125,7 @@ public class PinActivity extends AppCompatActivity {
         }
 
         // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_SERVER;
+        String url = NetworkSettings.OWNER_SERVER;
 
         // Create a JsonObjectRequest
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(

@@ -2,26 +2,36 @@ package com.example.dihari_majduri.pojo;
 
 public class Labour {
     private String name;
-    private String mobile;
+    private String mobileNumber;
+
+    private int id;
 
     public Labour(){}
-    public Labour(String name, String mobile) {
+    public Labour(String name, String mobileNumber) {
         this.name = name;
-        this.mobile = mobile;
+        this.mobileNumber = mobileNumber;
     }
 
+    public void setId(int id)
+    {
+        this.id=id;
+    }
     public void setName(String name){
         this.name=name;
     }
-    public void setMobile(String mobile)
+    public void setMobileNumber(String mobileNumber)
     {
-        this.mobile=mobile;
+        this.mobileNumber=mobileNumber;
     }
     public String getName() {
         return name;
     }
 
-    public String getMobile() {
-        return mobile;
+    public int getId()
+    {
+        return this.id;
+    }
+    public String getMobileNumber() {
+        return mobileNumber;
     }
 }

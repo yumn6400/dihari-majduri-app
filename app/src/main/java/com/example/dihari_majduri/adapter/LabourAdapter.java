@@ -35,7 +35,7 @@ public class LabourAdapter extends RecyclerView.Adapter<LabourAdapter.EmployeeVi
     public void onBindViewHolder(@NonNull EmployeeViewHolder holder, int position) {
         Labour labour = labourList.get(position);
         holder.employeeName.setText(labour.getName());
-        holder.employeeMobile.setText(labour.getMobile());
+        holder.employeeMobile.setText(labour.getMobileNumber());
     }
 
     @Override
@@ -61,10 +61,9 @@ public class LabourAdapter extends RecyclerView.Adapter<LabourAdapter.EmployeeVi
             if (position != RecyclerView.NO_POSITION) {
                 Labour labour = labourList.get(position);
                 Intent intent = new Intent(context, EditLabourActivity.class);
-              //  intent.putExtra("cropName", cropWorkDetails.getCropName());
-              //  intent.putExtra("cropWorkType", cropWorkDetails.getCropWorkType());
-               // intent.putExtra("dateOfWork", cropWorkDetails.getDate());
-              //  intent.putExtra("employeeCount", cropWorkDetails.getEmployeeCount());
+                intent.putExtra("id", labour.getId());
+                intent.putExtra("name", labour.getName());
+                intent.putExtra("mobileNumber", labour.getMobileNumber());
                 context.startActivity(intent);
             }
         }
