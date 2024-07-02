@@ -12,6 +12,20 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.common.NetworkSettings;
+import com.example.dihari_majduri.pojo.Labour;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class ProfileActivity extends AppCompatActivity {
 
     private TextView firstNameTextView;
@@ -21,7 +35,7 @@ public class ProfileActivity extends AppCompatActivity {
     private String firstName;
     private String lastName;
     private String mobileNumber;
-private TextView errorMessage;
+    private TextView errorMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,21 +84,80 @@ private TextView errorMessage;
      errorMessage=findViewById(R.id.errorMessage);
      errorMessage.setVisibility(View.INVISIBLE);
      saveButton.setOnClickListener(view -> {
-
+         errorMessage.setVisibility(View.INVISIBLE);
          firstName=firstNameTextView.getText().toString().trim();
          lastName=lastNameTextView.getText().toString().trim();
          mobileNumber=mobileNumberTextView.getText().toString().trim();
          System.out.println("***************First name : "+firstName);
          System.out.println("*************Last Name : "+lastName);
          System.out.println("******************Mobile number :"+mobileNumber);
-
-         // Network call to check mobile number already exists or not
-         Intent intent1 = new Intent(ProfileActivity.this, PinActivity.class);
-         intent1.putExtra("firstName",firstName);
-         intent1.putExtra("lastName",lastName);
-         intent1.putExtra("mobileNumber",mobileNumber);
-         startActivity(intent1);
-         finish();
+         checkMobileNumberExists(mobileNumber);
      });
     }
+
+    public void nextActivity()
+    {
+        // Network call to check mobile number already exists or not
+        Intent intent1 = new Intent(ProfileActivity.this, PinActivity.class);
+        intent1.putExtra("firstName",firstName);
+        intent1.putExtra("lastName",lastName);
+        intent1.putExtra("mobileNumber",mobileNumber);
+        startActivity(intent1);
+        finish();
+    }
+
+
+
+    public void checkMobileNumberExists(String mobileNumber)
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        // Define the URL to send the request to
+        String url = NetworkSettings.OWNER_SERVER+"/existsByMobileNumber/"+mobileNumber;
+        // Create a JsonObjectRequest
+        StringRequest stringRequest=new StringRequest(
+                Request.Method.GET, url,
+                response->{
+                    try {
+                        System.out.println(response);
+
+                            if(response.equals("true"))
+                            {
+                                errorMessage.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                nextActivity();
+                            }
+
+
+                    }catch(Exception e)
+                    {
+                        System.out.println(e);
+                    }
+
+                },
+                error-> {
+                    System.out.println("**********Response Error:"+error);
+                    generateServerError(error);
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json");
+                return params;
+            }
+        };
+        // Set retry policy
+        stringRequest.setRetryPolicy(NetworkSettings.requestPolicy);
+        // Add the request to the RequestQueue
+        requestQueue.add(stringRequest);
+    }
+
+
+    // Method to handle server errors
+    private void generateServerError(VolleyError error) {
+        // Handle the error response here
+        error.printStackTrace();
+    }
+
 }

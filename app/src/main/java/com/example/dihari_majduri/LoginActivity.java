@@ -15,10 +15,24 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.common.ApplicationSettings;
+import com.example.dihari_majduri.common.NetworkSettings;
+import com.example.dihari_majduri.network.pojo.LoginRequest;
+import com.example.dihari_majduri.pojo.Owner;
+import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoginActivity extends AppCompatActivity {
-    private String firstName;
-    private String lastName;
-    private String mobileNumber;
+
     private EditText pin1;
     private EditText pin2;
     private EditText pin3;
@@ -82,19 +96,71 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void loginEmployer()
+    public void nextActivity()
     {
         System.out.println("****************************Generated PIN :"+pin);
-        // Network call to send data to server
+        errorMessage.setVisibility(TextView.INVISIBLE);
         Intent intent1 = new Intent(LoginActivity.this, DashboardActivity.class);
-        intent1.putExtra("firstName",firstName);
-        intent1.putExtra("lastName",lastName);
-        intent1.putExtra("mobileNumber",mobileNumber);
         startActivity(intent1);
         finish();
 
     }
+    public void verifyPin(String pinStr)
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        // Create an Employer object
+        LoginRequest loginRequest = new LoginRequest(ApplicationSettings.ownerMobileNumber, pinStr);
+        // Serialize the Employer object to JSON
+        Gson gson = new Gson();
+        String entityJSONString = gson.toJson(loginRequest);
+        System.out.println("*******JSON STRING :"+entityJSONString);
+        // Create a JSONObject from the JSON string
+        JSONObject entityJSON = null;
+        try {
+            entityJSON = new JSONObject(entityJSONString);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Define the URL to send the request to
+        String url = NetworkSettings.OWNER_SERVER+"/validateOwnerPin";
+        // Create a JsonObjectRequest
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST, url, entityJSON,
+                response->{
+                    System.out.println("**********Response :"+response);
+                    // Handle the server's response here
+                    nextActivity();
+
+                },
+                error-> {
+                    errorMessage.setVisibility(TextView.VISIBLE);
+                    System.out.println("**********Response Error:"+error);
+                    pin1.setText("");
+                    pin2.setText("");
+                    pin3.setText("");
+                    pin4.setText("");
+                    focusAndShowKeyboard(pin1);
+                    pinCount=0;
+                    generateServerError(error);
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json");
+                return params;
+            }
+        };
+        // Set retry policy
+        jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
+        // Add the request to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+    private void generateServerError(VolleyError error) {
+        // Handle the error response here
+        error.printStackTrace();
+    }
     public class PinValidator implements TextWatcher {
         private final EditText editText;
         private final EditText next;
@@ -127,42 +193,31 @@ public class LoginActivity extends AppCompatActivity {
                 String pin3Str=pin3.getText().toString().trim();
                 String pin4Str=pin4.getText().toString().trim();
                 pin=pin1Str+pin2Str+pin3Str+pin4Str;
-                //If pin not equal to "1111"
-                if(!pin.equals("1111"))
-                {
-                    errorMessage.setVisibility(TextView.VISIBLE);
-                    System.out.println("PIN :"+pin);
-                    pin1.setText("");
-                    pin2.setText("");
-                    pin3.setText("");
-                    pin4.setText("");
-                    focusAndShowKeyboard(pin1);
-                    pinCount=0;
-                }else {
-                        errorMessage.setVisibility(TextView.INVISIBLE);
-                        closeKeyboard();
-                        loginEmployer();
-                }
+                verifyPin(pin);
 
             }
-        }
-        private void focusAndShowKeyboard(EditText target) {
-            if (target != null) {
-                target.requestFocus();
-                showSoftInput(target);
-            }
+
         }
 
-        private void showSoftInput(EditText target) {
-            InputMethodManager imm = (InputMethodManager) target.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(target, InputMethodManager.SHOW_IMPLICIT);
-        }
         private void closeKeyboard() {
             InputMethodManager inputManager = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
+
         @Override
         public void afterTextChanged(Editable editable) {
         }
     }
+
+    private void focusAndShowKeyboard(EditText target) {
+        if (target != null) {
+            target.requestFocus();
+            showSoftInput(target);
+        }
+    }
+    private void showSoftInput(EditText target) {
+        InputMethodManager imm = (InputMethodManager) target.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(target, InputMethodManager.SHOW_IMPLICIT);
+    }
+
 }

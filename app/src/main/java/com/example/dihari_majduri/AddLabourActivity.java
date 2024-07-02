@@ -63,8 +63,6 @@ private String mobileNumber;
             // Save Labour Information
             addNewLabour();
 
-
-
             Intent intent1 = new Intent(AddLabourActivity.this, LabourActivity.class);
             startActivity(intent1);
             finish();

@@ -105,11 +105,8 @@ public class LabourActivity extends AppCompatActivity  {
     public void getAllLabours()
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-
         // Define the URL to send the request to
         String url = NetworkSettings.LABOUR_SERVER;
-
         // Create a JsonObjectRequest
         StringRequest stringRequest=new StringRequest(
                 Request.Method.GET, url,

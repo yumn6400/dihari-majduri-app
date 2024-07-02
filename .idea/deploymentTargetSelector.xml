@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-06-05T03:42:51.785999600Z">
+        <DropdownSelection timestamp="2024-07-01T07:13:01.670125300Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\pradh\.android\avd\POCO_M6_Pro_API_30.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=d3a2dc9b1354" />
             </handle>
           </Target>
         </DropdownSelection>

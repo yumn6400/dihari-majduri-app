@@ -21,6 +21,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.pojo.Owner;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.google.gson.Gson;
@@ -107,10 +108,8 @@ public class PinActivity extends AppCompatActivity {
     public void networkCall()
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-
         // Create an Employer object
         Owner owner = new Owner(this.firstName, this.lastName, this.mobileNumber, this.pin);
-
         // Serialize the Employer object to JSON
         Gson gson = new Gson();
         String entityJSONString = gson.toJson(owner);
@@ -123,16 +122,15 @@ public class PinActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         // Define the URL to send the request to
         String url = NetworkSettings.OWNER_SERVER;
-
         // Create a JsonObjectRequest
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST, url, entityJSON,
                 response->{
                         System.out.println("**********Response :"+response);
                         // Handle the server's response here
+                     nextActivity();
 
                 },
                 error-> {
@@ -147,10 +145,8 @@ public class PinActivity extends AppCompatActivity {
                 return params;
             }
         };
-
         // Set retry policy
         jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
-
         // Add the request to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
@@ -167,14 +163,21 @@ public class PinActivity extends AppCompatActivity {
     // Network call to send data to server
     networkCall();
 
+    }
+
+    public void nextActivity()
+    {
+        ApplicationSettings.saveToSharedPreferences(this,"firstName",firstName);
+        ApplicationSettings.saveToSharedPreferences(this,"lastName",lastName);
+        ApplicationSettings.saveToSharedPreferences(this,"mobileNumber",mobileNumber);
         Intent intent1 = new Intent(PinActivity.this, DashboardActivity.class);
         intent1.putExtra("firstName",firstName);
         intent1.putExtra("lastName",lastName);
         intent1.putExtra("mobileNumber",mobileNumber);
         startActivity(intent1);
         finish();
-
     }
+
 
     public class PinValidator implements TextWatcher {
         private final EditText editText;

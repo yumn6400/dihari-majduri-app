@@ -4,19 +4,19 @@ import java.util.List;
 
 public class Crop {
     private String name;
+    private int id;
 
-    private List<CropWorkType> cropWorkTypeList;
-
-    public Crop(String name, List<CropWorkType> cropWorkTypeList) {
+    public Crop(){}
+    public Crop(int id,String name) {
         this.name = name;
-        this.cropWorkTypeList=cropWorkTypeList;
+        this.id=id;
     }
 
+    public void setId(int id){this.id =id;}
+    public void setName(String name){this.name=name;}
     public String getName() {
         return name;
     }
 
-    public List<CropWorkType> getCropWorkTypeList() {
-        return cropWorkTypeList;
-    }
+    public int getId(){return id;}
 }

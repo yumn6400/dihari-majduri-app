@@ -18,58 +18,77 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.common.NetworkSettings;
+import com.example.dihari_majduri.network.pojo.DihariRequest;
+import com.example.dihari_majduri.pojo.CropWorkType;
+import com.example.dihari_majduri.pojo.Labour;
+import com.example.dihari_majduri.pojo.Owner;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import com.example.dihari_majduri.pojo.Crop;
+import com.google.gson.Gson;
+
+import org.json.JSONObject;
 
 public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
 
     private Spinner spinnerCrop;
     private Spinner spinnerCropWorkType;
     private TextView textViewSelectDate;
-    private Spinner spinnerEmployee;
     private TextInputLayout textInputLayoutEmployee;
     private MultiAutoCompleteTextView multiAutoCompleteTextViewEmployee;
 
 
-    private String[] cropsArray = {"Crop 1", "Crop 2", "Crop 3", "Crop 4"};
-    private String[] cropWorkTypesArray = {"Plowing", "Sowing", "Watering", "Harvesting"};
-    private String[] employeesArray = {"Employee 1", "Employee 2", "Employee 3", "Employee 4"};
+    private static List<String> cropsNameArray = new ArrayList<>();
+
+    private static List<String> cropWorkTypesNameArray = new ArrayList<>();
+
+    private static List<String> laboursNameArray =new ArrayList<>();
+    private List<String> employeesArray = new ArrayList<>();
 
     private Button buttonSave;
     private Set<String> employeesSet;
-
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.add_dihari_bottom_sheet, container, false);
 
-
         spinnerCrop = view.findViewById(R.id.spinnerCrop);
         spinnerCropWorkType = view.findViewById(R.id.spinnerCropWorkType);
         textViewSelectDate = view.findViewById(R.id.textViewSelectDate);
         buttonSave = view.findViewById(R.id.buttonSave);
-        multiAutoCompleteTextViewEmployee = view.findViewById(R.id.multiAutoCompleteTextViewEmployee);
         textInputLayoutEmployee = view.findViewById(R.id.textInputLayoutEmployee);
+        multiAutoCompleteTextViewEmployee = view.findViewById(R.id.multiAutoCompleteTextViewEmployee);
+
         // Initialize the spinners with the defined arrays
-        ArrayAdapter<String> cropAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, cropsArray);
+        ArrayAdapter<String> cropAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, cropsNameArray);
         cropAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCrop.setAdapter(cropAdapter);
 
-        ArrayAdapter<String> cropWorkTypeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, cropWorkTypesArray);
+        ArrayAdapter<String> cropWorkTypeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, cropWorkTypesNameArray);
         cropWorkTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCropWorkType.setAdapter(cropWorkTypeAdapter);
 
         // Initialize MultiAutoCompleteTextView for employees
-        ArrayAdapter<String> employeeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, employeesArray);
+        ArrayAdapter<String> employeeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, laboursNameArray);
         multiAutoCompleteTextViewEmployee.setAdapter(employeeAdapter);
         multiAutoCompleteTextViewEmployee.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         multiAutoCompleteTextViewEmployee.addTextChangedListener(new SearchEmployeeListener());
-
 
         employeesSet = new HashSet<>();
         for (String employee : employeesArray) {
@@ -91,7 +110,7 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
                 String crop = spinnerCrop.getSelectedItem().toString();
                 String cropWorkType = spinnerCropWorkType.getSelectedItem().toString();
                 String date = textViewSelectDate.getText().toString();
-                String employee = spinnerEmployee.getSelectedItem().toString();
+                String employee = multiAutoCompleteTextViewEmployee.getText().toString();
 
                 if (crop.isEmpty() || cropWorkType.isEmpty() || date.isEmpty() || employee.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
@@ -100,11 +119,72 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
                     Toast.makeText(getContext(), "Form Submitted", Toast.LENGTH_SHORT).show();
                     dismiss();
                 }
+                System.out.println("crop :"+crop);
+                System.out.println("Crop work type :"+cropWorkType);
+                System.out.println("Date :"+date);
+                System.out.println("Employee :"+employee);
+                saveInformation(crop,cropWorkType,date,employee);
             }
         });
 
-
         return view;
+    }
+
+
+    public void saveInformation(String crop,String cropWorkType,String date,String employee)
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+
+        // Create an Employer object
+        DihariRequest dihariRequest=new DihariRequest(crop,cropWorkType,date,employee);
+
+        // Serialize the Employer object to JSON
+        Gson gson = new Gson();
+        String entityJSONString = gson.toJson(dihariRequest);
+        System.out.println("*******JSON STRING :"+entityJSONString);
+        // Create a JSONObject from the JSON string
+        JSONObject entityJSON = null;
+        try {
+            entityJSON = new JSONObject(entityJSONString);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Define the URL to send the request to
+        String url = NetworkSettings.OWNER_SERVER;
+
+        // Create a JsonObjectRequest
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST, url, entityJSON,
+                response->{
+                    System.out.println("**********Response :"+response);
+                    // Handle the server's response here
+
+                },
+                error-> {
+                    System.out.println("**********Response Error:"+error);
+                    generateServerError(error);
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json");
+                return params;
+            }
+        };
+
+        // Set retry policy
+        jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
+
+        // Add the request to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private void generateServerError(VolleyError error) {
+        // Handle the error response here
+        error.printStackTrace();
     }
 
     private void showDatePickerDialog() {
@@ -123,10 +203,30 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
         datePickerDialog.show();
     }
 
+    public static void setCrops(List<Crop> crops) {
+        for (Crop crop : crops)
+        {
+            cropsNameArray.add(crop.getName());
+        }
+    }
+
+    public static void setCropWorkTypes(List<CropWorkType> cropWorkTypes) {
+        for (CropWorkType cropWorkType : cropWorkTypes)
+        {
+            cropWorkTypesNameArray.add(cropWorkType.getName());
+        }
+    }
+
+    public static void setLabours(List<Labour> labours) {
+        for (Labour labour : labours)
+        {
+            laboursNameArray.add(labour.getName());
+        }
+    }
+
     public class SearchEmployeeListener implements TextWatcher {
 
-        public SearchEmployeeListener()
-        {
+        public SearchEmployeeListener() {
         }
 
         @Override
@@ -158,11 +258,8 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
             textInputLayoutEmployee.setError(null);
         }
 
-
         @Override
         public void afterTextChanged(Editable editable) {
-
         }
     }
-
 }
