@@ -13,17 +13,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.dihari_majduri.LabourActivity;
 import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.pojo.CropWorkDetails;
+import com.example.dihari_majduri.pojo.LabourEmploymentPeriod;
+import com.google.gson.Gson;
 
 import java.util.List;
 
 public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.DashboardViewHolder> {
 
-    private List<CropWorkDetails> cropWorkDetailsList;
+    private List<LabourEmploymentPeriod> labourEmploymentPeriodList;
     private Context context;
 
-    public DashboardAdapter(Context context, List<CropWorkDetails>  cropWorkDetailsList) {
+    public DashboardAdapter(Context context, List<LabourEmploymentPeriod>  labourEmploymentPeriodList) {
         this.context=context;
-        this. cropWorkDetailsList =  cropWorkDetailsList;
+        this. labourEmploymentPeriodList =  labourEmploymentPeriodList;
     }
 
     @NonNull
@@ -36,16 +38,16 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 
     @Override
     public void onBindViewHolder(@NonNull DashboardViewHolder holder, int position) {
-         CropWorkDetails cropWorkDetails = cropWorkDetailsList.get(position);
-        holder.cropName.setText(cropWorkDetails.getCropName());
-        holder.cropWorkType.setText(cropWorkDetails.getCropWorkType());
-        holder.dateOfWork.setText(cropWorkDetails.getDate());
-        holder.employeeCount.setText(String.valueOf(cropWorkDetails.getEmployeeCount()));
+         LabourEmploymentPeriod labourEmploymentPeriod=labourEmploymentPeriodList.get(position);
+        holder.cropName.setText(labourEmploymentPeriod.getCropName());
+        holder.cropWorkType.setText(labourEmploymentPeriod.getCropWorkTypeName());
+        holder.dateOfWork.setText(labourEmploymentPeriod.getDate().toString());
+        holder.employeeCount.setText(String.valueOf(labourEmploymentPeriod.getLabourCount()));
     }
 
     @Override
     public int getItemCount() {
-        return cropWorkDetailsList.size();
+        return labourEmploymentPeriodList.size();
     }
 
     public class DashboardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -68,15 +70,19 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
         public void onClick(View v) {
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
-                CropWorkDetails cropWorkDetails = cropWorkDetailsList.get(position);
+                LabourEmploymentPeriod labourEmploymentPeriod = labourEmploymentPeriodList.get(position);
                 Intent intent = new Intent(context, LabourActivity.class);
-                intent.putExtra("cropName", cropWorkDetails.getCropName());
-                intent.putExtra("cropWorkType", cropWorkDetails.getCropWorkType());
-                intent.putExtra("dateOfWork", cropWorkDetails.getDate());
-                intent.putExtra("employeeCount", cropWorkDetails.getEmployeeCount());
+
+                // Convert the list of Labour objects to a JSON string
+                Gson gson = new Gson();
+                String labourListJson = gson.toJson(labourEmploymentPeriod.getLabours());
+
+                // Pass the JSON string as an extra
+                intent.putExtra("labourList", labourListJson);
                 context.startActivity(intent);
             }
         }
+
     }
 
 }

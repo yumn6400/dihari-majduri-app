@@ -19,13 +19,17 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.adapter.LabourAdapter;
+import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.pojo.Labour;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +56,18 @@ public class LabourActivity extends AppCompatActivity  {
             return insets;
         });
         initComponent();
+
+        // Retrieve the JSON string from the Intent extras
+        Intent intent = getIntent();
+        String labourListJson = intent.getStringExtra("labourList");
+System.out.println("**************"+labourListJson);
+        // Convert the JSON string back to a list of Labour objects
+        Gson gson = new Gson();
+        Type labourListType = new TypeToken<List<Labour>>() {}.getType();
+        labour = gson.fromJson(labourListJson, labourListType);
+
+
+        setEmployeesData(labour);
     }
 
     private void initComponent()
@@ -92,7 +108,8 @@ public class LabourActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
-        getAllLabours();
+        //getAllLabours();
+        setEmployeesData(labour);
     }
 
     public void setEmployeesData(List<Labour> list)
@@ -106,7 +123,7 @@ public class LabourActivity extends AppCompatActivity  {
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_SERVER;
+        String url = NetworkSettings.LABOUR_SERVER+"/"+ ApplicationSettings.owner_id;
         // Create a JsonObjectRequest
         StringRequest stringRequest=new StringRequest(
                 Request.Method.GET, url,
@@ -116,7 +133,7 @@ public class LabourActivity extends AppCompatActivity  {
                         System.out.println("**********Employee Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
                         if ((boolean) jsonObject.get("success")) {
-                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("result")));
+                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
                             JSONObject job;
                             Labour labour;
                             for (int i = 0; i < jsonArray.length(); i++)

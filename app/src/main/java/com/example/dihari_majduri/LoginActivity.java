@@ -26,6 +26,7 @@ import com.example.dihari_majduri.network.pojo.LoginRequest;
 import com.example.dihari_majduri.pojo.Owner;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -128,10 +129,15 @@ public class LoginActivity extends AppCompatActivity {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST, url, entityJSON,
                 response->{
-                    System.out.println("**********Response :"+response);
-                    // Handle the server's response here
-                    nextActivity();
-
+                    try {
+                        if(response.getBoolean("success"))
+                        {
+                            nextActivity();
+                        }
+                        System.out.println("**********Response :"+response);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
                 },
                 error-> {
                     errorMessage.setVisibility(TextView.VISIBLE);

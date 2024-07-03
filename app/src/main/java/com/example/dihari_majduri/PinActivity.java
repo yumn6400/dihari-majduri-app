@@ -18,8 +18,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.pojo.Owner;
@@ -105,39 +107,45 @@ public class PinActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void networkCall()
-    {
+    public void networkCall() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        // Create an Employer object
+
+        // Create an Owner object
         Owner owner = new Owner(this.firstName, this.lastName, this.mobileNumber, this.pin);
-        // Serialize the Employer object to JSON
+
+        // Serialize the Owner object to JSON
         Gson gson = new Gson();
         String entityJSONString = gson.toJson(owner);
-        System.out.println("*******JSON STRING :"+entityJSONString);
+        System.out.println("*******JSON STRING :" + entityJSONString);
+
         // Create a JSONObject from the JSON string
         JSONObject entityJSON = null;
         try {
             entityJSON = new JSONObject(entityJSONString);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         // Define the URL to send the request to
         String url = NetworkSettings.OWNER_SERVER;
+
         // Create a JsonObjectRequest
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.POST, url, entityJSON,
+                Request.Method.POST,
+                url,
+                entityJSON,
                 response->{
-                        System.out.println("**********Response :"+response);
-                        // Handle the server's response here
-                     nextActivity();
-
+                    try {
+                        System.out.println("**********Response :" + response.toString());
+                        if (response.getBoolean("success")) nextActivity();
+                        nextActivity();
+                    }catch(Exception e){System.out.println(e);}
                 },
-                error-> {
-                        System.out.println("**********Response Error:"+error);
+                error->{
+                        System.out.println("**********Response Error:" + error.toString());
                         generateServerError(error);
-                    }
-                ) {
+                }
+        ) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
@@ -145,8 +153,10 @@ public class PinActivity extends AppCompatActivity {
                 return params;
             }
         };
+
         // Set retry policy
         jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
+
         // Add the request to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
@@ -156,7 +166,6 @@ public class PinActivity extends AppCompatActivity {
         // Handle the error response here
         error.printStackTrace();
     }
-
     public void addEmployer()
     {
     System.out.println("****************************Generated PIN :"+pin);

@@ -21,11 +21,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.adapter.DashboardAdapter;
+import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.pojo.Crop;
 import com.example.dihari_majduri.pojo.CropWorkDetails;
 import com.example.dihari_majduri.pojo.CropWorkType;
 import com.example.dihari_majduri.pojo.Labour;
+import com.example.dihari_majduri.pojo.LabourEmploymentPeriod;
 import com.example.dihari_majduri.pojo.Owner;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.gson.Gson;
@@ -33,6 +35,7 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +54,8 @@ public class DashboardActivity extends AppCompatActivity {
     private List<Crop> cropList=new ArrayList<>();
     private List<CropWorkType> cropWorkTypeList=new ArrayList<>();
     private List<Labour> laboursList=new ArrayList<>();
+
+    private List<LabourEmploymentPeriod> labourEmploymentPeriodList=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,12 +111,13 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        getAllLabourEmployments();
         getAllCrops();
         getAllCropWorkTypes();
         getAllLabours();
 
 
-        List<CropWorkDetails> cropWorkDetailsList = new ArrayList<>();
+      /*  List<CropWorkDetails> cropWorkDetailsList = new ArrayList<>();
         cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 12,"Soyabean","katai"));
         cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 3,"Sarso","katai"));
         cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 12,"Soyabean","katai"));
@@ -122,15 +128,26 @@ public class DashboardActivity extends AppCompatActivity {
         cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 3,"Sarso","katai"));
         cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 12,"Soyabean","katai"));
         cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 3,"Sarso","katai"));
-
+*/
         // Set up adapter
-        DashboardAdapter dashboardAdapter = new DashboardAdapter(this,cropWorkDetailsList);
+       // DashboardAdapter dashboardAdapter = new DashboardAdapter(this,cropWorkDetailsList);
+
+      //  recyclerView.setLayoutManager(new LinearLayoutManager(DashboardActivity.this));
+
+       // recyclerView.setAdapter(dashboardAdapter);
+
+    }
+
+    public void setDashboardEmploymentPeriod(List<LabourEmploymentPeriod> list)
+    {
+        DashboardAdapter dashboardAdapter = new DashboardAdapter(this,list);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(DashboardActivity.this));
 
         recyclerView.setAdapter(dashboardAdapter);
 
     }
+
 
     public void getAllCrops()
     {
@@ -145,7 +162,7 @@ public class DashboardActivity extends AppCompatActivity {
                         System.out.println("**********Employee Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
                         if ((boolean) jsonObject.get("success")) {
-                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("result")));
+                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
                             JSONObject job;
                             Crop crop;
                             for (int i = 0; i < jsonArray.length(); i++)
@@ -197,7 +214,7 @@ public class DashboardActivity extends AppCompatActivity {
                         System.out.println("**********Employee Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
                         if ((boolean) jsonObject.get("success")) {
-                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("result")));
+                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
                             JSONObject job;
                             CropWorkType cropWorkType;
                             for (int i = 0; i < jsonArray.length(); i++)
@@ -236,12 +253,85 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
 
+    public void getAllLabourEmployments() {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = NetworkSettings.LABOUR_EMPLOYMENT_PERIODS_SERVER + "/" + ApplicationSettings.owner_id;
+
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET, url,
+                response -> {
+                    try {
+                        System.out.println("**********Employee Response :" + response);
+                        // Parse response as a JSONObject
+                        JSONObject jsonResponse = new JSONObject(response);
+
+                        // Check if the success field is true
+                        if (jsonResponse.getBoolean("success")) {
+                            // Extract data array
+                            JSONArray jsonArray = jsonResponse.getJSONArray("data");
+
+                            labourEmploymentPeriodList.clear();
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject job = jsonArray.getJSONObject(i);
+
+                                LabourEmploymentPeriod labourEmploymentPeriod = new LabourEmploymentPeriod();
+                                labourEmploymentPeriod.setDate(Date.valueOf(job.getString("date")));
+                                labourEmploymentPeriod.setCropName(job.getString("cropName"));
+                                labourEmploymentPeriod.setCropWorkTypeName(job.getString("cropWorkTypeName"));
+                                labourEmploymentPeriod.setLabourCount(job.getInt("labourCount"));
+
+                                // Parse LabourPojo array
+                                JSONArray laboursArray = job.getJSONArray("labourPojo");
+                                List<Labour> laboursList = new ArrayList<>();
+                                for (int j = 0; j < laboursArray.length(); j++) {
+                                    JSONObject labourJson = laboursArray.getJSONObject(j);
+                                    Labour labourObj = new Labour();
+                                    labourObj.setId(labourJson.getInt("id"));
+                                    labourObj.setName(labourJson.getString("name"));
+                                    labourObj.setMobileNumber(labourJson.getString("mobileNumber"));
+                                    laboursList.add(labourObj);
+                                }
+                                labourEmploymentPeriod.setLabours(laboursList);
+
+                                labourEmploymentPeriodList.add(labourEmploymentPeriod);
+                            }
+
+                            setDashboardEmploymentPeriod(labourEmploymentPeriodList);
+                        } else {
+                            System.out.println("Failed to fetch data: " + jsonResponse.getString("message"));
+                        }
+
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+
+                },
+                error -> {
+                    System.out.println("**********Response Error:" + error);
+                    generateServerError(error);
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json");
+                return params;
+            }
+        };
+
+        stringRequest.setRetryPolicy(NetworkSettings.requestPolicy);
+        requestQueue.add(stringRequest);
+    }
+
+
+
 
     public void getAllLabours()
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_SERVER;
+        String url = NetworkSettings.LABOUR_SERVER+"/"+ ApplicationSettings.owner_id;
         // Create a JsonObjectRequest
         StringRequest stringRequest=new StringRequest(
                 Request.Method.GET, url,
@@ -251,7 +341,7 @@ public class DashboardActivity extends AppCompatActivity {
                         System.out.println("**********Employee Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
                         if ((boolean) jsonObject.get("success")) {
-                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("result")));
+                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
                             JSONObject job;
                             Labour labour;
                             for (int i = 0; i < jsonArray.length(); i++)

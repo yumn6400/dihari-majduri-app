@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.NetworkSettings;
@@ -114,19 +115,25 @@ public class ProfileActivity extends AppCompatActivity {
         // Define the URL to send the request to
         String url = NetworkSettings.OWNER_SERVER+"/existsByMobileNumber/"+mobileNumber;
         // Create a JsonObjectRequest
-        StringRequest stringRequest=new StringRequest(
-                Request.Method.GET, url,
+        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(
+                Request.Method.GET, url,null,
                 response->{
                     try {
                         System.out.println(response);
 
-                            if(response.equals("true"))
-                            {
+                        try {
+                            System.out.println(response);
+
+                            boolean exists = response.getBoolean("data");
+
+                            if (exists) {
                                 errorMessage.setVisibility(View.VISIBLE);
-                            }
-                            else {
+                            } else {
                                 nextActivity();
                             }
+                        } catch (Exception e) {
+                            System.out.println(e);
+                        }
 
 
                     }catch(Exception e)
@@ -148,9 +155,9 @@ public class ProfileActivity extends AppCompatActivity {
             }
         };
         // Set retry policy
-        stringRequest.setRetryPolicy(NetworkSettings.requestPolicy);
+        jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
         // Add the request to the RequestQueue
-        requestQueue.add(stringRequest);
+        requestQueue.add(jsonObjectRequest);
     }
 
 
