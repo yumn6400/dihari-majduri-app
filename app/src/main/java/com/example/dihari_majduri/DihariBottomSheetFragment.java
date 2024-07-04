@@ -23,14 +23,17 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.network.pojo.DihariRequest;
+import com.example.dihari_majduri.network.pojo.LabourRequest;
 import com.example.dihari_majduri.pojo.CropWorkType;
 import com.example.dihari_majduri.pojo.Labour;
 import com.example.dihari_majduri.pojo.Owner;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -38,10 +41,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import com.example.dihari_majduri.pojo.Crop;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
@@ -52,7 +59,7 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
     private TextInputLayout textInputLayoutEmployee;
     private MultiAutoCompleteTextView multiAutoCompleteTextViewEmployee;
 
-
+     private static List<Labour> laboursList=new ArrayList<>();
     private static List<String> cropsNameArray = new ArrayList<>();
 
     private static List<String> cropWorkTypesNameArray = new ArrayList<>();
@@ -123,22 +130,41 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
                 System.out.println("Crop work type :"+cropWorkType);
                 System.out.println("Date :"+date);
                 System.out.println("Employee :"+employee);
-                saveInformation(crop,cropWorkType,date,employee);
+               // saveInformation(crop,cropWorkType,date,employee);
+                List<Labour> selectedLabours = getSelectedLabours(employee, laboursList);
+
+                saveInformation(crop, cropWorkType, date, selectedLabours);
             }
         });
 
         return view;
     }
 
+    private List<Labour> getSelectedLabours(String employeeNames, List<Labour> labourList) {
+        StringTokenizer tokenizer = new StringTokenizer(employeeNames, ", ");
+        Map<String, Labour> labourMap = new HashMap<>();
 
-    public void saveInformation(String crop,String cropWorkType,String date,String employee)
-    {
+        for (Labour labour : labourList) {
+            labourMap.put(labour.getName(), labour);
+        }
+
+        List<Labour> selectedLabours = new ArrayList<>();
+        while (tokenizer.hasMoreTokens()) {
+            String name = tokenizer.nextToken();
+            if (labourMap.containsKey(name)) {
+                selectedLabours.add(labourMap.get(name));
+            }
+        }
+
+        return selectedLabours;
+    }
+
+    public void saveInformation(String crop, String cropWorkType, String date, List<Labour> selectedLabours) {
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
 
-        // Create an Employer object
-        DihariRequest dihariRequest=new DihariRequest(crop,cropWorkType,date,employee);
+        // Serialize the list of Labour objects to JSON
 
-        // Serialize the Employer object to JSON
+        DihariRequest dihariRequest=new DihariRequest(crop,cropWorkType,date,selectedLabours);
         Gson gson = new Gson();
         String entityJSONString = gson.toJson(dihariRequest);
         System.out.println("*******JSON STRING :"+entityJSONString);
@@ -146,24 +172,22 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
         JSONObject entityJSON = null;
         try {
             entityJSON = new JSONObject(entityJSONString);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // Define the URL to send the request to
-        String url = NetworkSettings.OWNER_SERVER;
+        String url = NetworkSettings.LABOUR_EMPLOYMENT_PERIODS_SERVER+"/"+ ApplicationSettings.ownerId;
 
         // Create a JsonObjectRequest
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST, url, entityJSON,
-                response->{
-                    System.out.println("**********Response :"+response);
+                response -> {
+                    System.out.println("**********Response :" + response);
                     // Handle the server's response here
-
                 },
-                error-> {
-                    System.out.println("**********Response Error:"+error);
+                error -> {
+                    System.out.println("**********Response Error:" + error);
                     generateServerError(error);
                 }
         ) {
@@ -181,6 +205,7 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
         // Add the request to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
+
 
     private void generateServerError(VolleyError error) {
         // Handle the error response here
@@ -204,6 +229,7 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     public static void setCrops(List<Crop> crops) {
+        cropsNameArray.clear();
         for (Crop crop : crops)
         {
             cropsNameArray.add(crop.getName());
@@ -211,6 +237,7 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     public static void setCropWorkTypes(List<CropWorkType> cropWorkTypes) {
+        cropWorkTypesNameArray.clear();
         for (CropWorkType cropWorkType : cropWorkTypes)
         {
             cropWorkTypesNameArray.add(cropWorkType.getName());
@@ -218,6 +245,8 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     public static void setLabours(List<Labour> labours) {
+        laboursList=labours;
+        laboursNameArray.clear();
         for (Labour labour : labours)
         {
             laboursNameArray.add(labour.getName());

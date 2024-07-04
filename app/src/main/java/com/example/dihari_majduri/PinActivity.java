@@ -24,6 +24,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.ApplicationSettings;
+import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.pojo.Owner;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.google.gson.Gson;
@@ -46,6 +47,7 @@ public class PinActivity extends AppCompatActivity {
     private TextView errorMessage;
     private String pin;
     private int pinCount=0;
+    private NetworkConnectivityManager networkConnectivityManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +76,7 @@ public class PinActivity extends AppCompatActivity {
         pinEntryMessage=findViewById(R.id.pinEntryMessage);
         errorMessage=findViewById(R.id.errorMessage);
         errorMessage.setVisibility(TextView.INVISIBLE);
-
+        networkConnectivityManager=new NetworkConnectivityManager(this,this);
         pin1.addTextChangedListener(new PinValidator(pin1,pin2,null));
         pin2.addTextChangedListener(new PinValidator(pin2,pin3,pin1));
         pin3.addTextChangedListener(new PinValidator(pin3,pin4,pin2));
@@ -134,16 +136,34 @@ public class PinActivity extends AppCompatActivity {
                 Request.Method.POST,
                 url,
                 entityJSON,
-                response->{
+                response -> {
                     try {
                         System.out.println("**********Response :" + response.toString());
-                        if (response.getBoolean("success")) nextActivity();
-                        nextActivity();
-                    }catch(Exception e){System.out.println(e);}
+                        if (response.getBoolean("success")) {
+                            // Get the data object from the response
+                            JSONObject jsonObject = response.getJSONObject("data");
+                            // Extract the ID and other details from the response
+                            int id = jsonObject.getInt("id");
+                            String firstName = jsonObject.getString("firstName");
+                            String lastName = jsonObject.getString("lastName");
+                            String mobileNumber = jsonObject.getString("mobileNumber");
+
+                            // Save the details to shared preferences
+                            ApplicationSettings.saveToSharedPreferences(this, "id", String.valueOf(id));
+                            ApplicationSettings.saveToSharedPreferences(this, "firstName", firstName);
+                            ApplicationSettings.saveToSharedPreferences(this, "lastName", lastName);
+                            ApplicationSettings.saveToSharedPreferences(this, "mobileNumber", mobileNumber);
+
+                            // Navigate to the next activity
+                            nextActivity();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 },
-                error->{
-                        System.out.println("**********Response Error:" + error.toString());
-                        generateServerError(error);
+                error -> {
+                    System.out.println("**********Response Error:" + error.toString());
+                    generateServerError(error);
                 }
         ) {
             @Override
@@ -161,6 +181,7 @@ public class PinActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
+
     // Method to handle server errors
     private void generateServerError(VolleyError error) {
         // Handle the error response here
@@ -170,15 +191,17 @@ public class PinActivity extends AppCompatActivity {
     {
     System.out.println("****************************Generated PIN :"+pin);
     // Network call to send data to server
-    networkCall();
-
+        if(networkConnectivityManager.isConnected())
+        {
+            networkCall();
+        }else {
+            networkConnectivityManager.showNetworkConnectivityDialog();
+        }
     }
 
     public void nextActivity()
     {
-        ApplicationSettings.saveToSharedPreferences(this,"firstName",firstName);
-        ApplicationSettings.saveToSharedPreferences(this,"lastName",lastName);
-        ApplicationSettings.saveToSharedPreferences(this,"mobileNumber",mobileNumber);
+
         Intent intent1 = new Intent(PinActivity.this, DashboardActivity.class);
         intent1.putExtra("firstName",firstName);
         intent1.putExtra("lastName",lastName);

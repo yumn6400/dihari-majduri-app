@@ -1,21 +1,23 @@
 package com.example.dihari_majduri.network.pojo;
 
+import com.example.dihari_majduri.pojo.Labour;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class DihariRequest {
+
     private String cropName;
     private String cropWorkTypeName;
     private String date;
-    private String laboursName;
+    private List<Labour> laboursList;
 
-    public DihariRequest(String cropName, String cropWorkTypeName, String date, String laboursName) {
+    public DihariRequest(String cropName, String cropWorkTypeName, String date, List<Labour> laboursList) {
         this.cropName = cropName;
         this.cropWorkTypeName = cropWorkTypeName;
         this.date = date;
-        this.laboursName = laboursName;
+        this.laboursList=laboursList;
     }
-
 
     public String getCropName() {
         return cropName;
@@ -41,15 +43,13 @@ public class DihariRequest {
         this.date = date;
     }
 
-    public String getLaboursName() {
-        return laboursName;
-    }
 
-    public void setLaboursName(String laboursName) {
-        this.laboursName = laboursName;
+    public void setLaboursList(List<Labour> laboursList)
+    {
+        this.laboursList=laboursList;
     }
-
-    public List<String> getLaboursList() {
-        return Arrays.asList(laboursName.split("\\s*,\\s*"));
+    public List<Labour> getLaboursList()
+    {
+        return this.laboursList;
     }
 }

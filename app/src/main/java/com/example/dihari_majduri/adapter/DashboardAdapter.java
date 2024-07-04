@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.dihari_majduri.DashboardLabourActivity;
 import com.example.dihari_majduri.LabourActivity;
 import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.pojo.CropWorkDetails;
@@ -42,7 +43,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
         holder.cropName.setText(labourEmploymentPeriod.getCropName());
         holder.cropWorkType.setText(labourEmploymentPeriod.getCropWorkTypeName());
         holder.dateOfWork.setText(labourEmploymentPeriod.getDate().toString());
-        holder.employeeCount.setText(String.valueOf(labourEmploymentPeriod.getLabourCount()));
+        holder.employeeCount.setText("Employees: "+labourEmploymentPeriod.getLabourCount());
     }
 
     @Override
@@ -71,7 +72,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
                 LabourEmploymentPeriod labourEmploymentPeriod = labourEmploymentPeriodList.get(position);
-                Intent intent = new Intent(context, LabourActivity.class);
+                Intent intent = new Intent(context, DashboardLabourActivity.class);
 
                 // Convert the list of Labour objects to a JSON string
                 Gson gson = new Gson();

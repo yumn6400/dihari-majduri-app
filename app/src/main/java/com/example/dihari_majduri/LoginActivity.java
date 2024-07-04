@@ -21,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.ApplicationSettings;
+import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.network.pojo.LoginRequest;
 import com.example.dihari_majduri.pojo.Owner;
@@ -42,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView errorMessage;
     private String pin;
     private int pinCount=0;
+    private NetworkConnectivityManager networkConnectivityManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +65,8 @@ public class LoginActivity extends AppCompatActivity {
         pinEntryMessage=findViewById(R.id.pinEntryMessage);
         errorMessage=findViewById(R.id.errorMessage);
         errorMessage.setVisibility(TextView.INVISIBLE);
+
+        networkConnectivityManager=new NetworkConnectivityManager(this,this);
 
         pin1.addTextChangedListener(new LoginActivity.PinValidator(pin1,pin2,null));
         pin2.addTextChangedListener(new LoginActivity.PinValidator(pin2,pin3,pin1));
@@ -199,7 +203,13 @@ public class LoginActivity extends AppCompatActivity {
                 String pin3Str=pin3.getText().toString().trim();
                 String pin4Str=pin4.getText().toString().trim();
                 pin=pin1Str+pin2Str+pin3Str+pin4Str;
-                verifyPin(pin);
+                if(networkConnectivityManager.isConnected())
+                {
+                    verifyPin(pin);
+                }else {
+                    networkConnectivityManager.showNetworkConnectivityDialog();
+                }
+
 
             }
 

@@ -18,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.ApplicationSettings;
+import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.network.pojo.LabourRequest;
 import com.example.dihari_majduri.pojo.Labour;
@@ -34,6 +35,7 @@ public class EditLabourActivity extends AppCompatActivity {
     private TextView mobileNumberTextView;
     private String name;
     private String mobileNumber;
+    private NetworkConnectivityManager networkConnectivityManager;
     private int id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class EditLabourActivity extends AppCompatActivity {
 
     private void initComponent()
     {
+        networkConnectivityManager=new NetworkConnectivityManager(this,this);
         nameTextView=findViewById(R.id.name);
         mobileNumberTextView=findViewById(R.id.mobileNumber);
         nameTextView.setText(this.name);
@@ -68,7 +71,16 @@ public class EditLabourActivity extends AppCompatActivity {
             mobileNumber=mobileNumberTextView.getText().toString().trim();
             System.out.println("Name :"+name+",Mobile number :"+mobileNumber);
             // Save Labour Information
-            updateLabour();
+
+            if(networkConnectivityManager.isConnected())
+            {
+                updateLabour();
+            }else {
+                networkConnectivityManager.showNetworkConnectivityDialog();
+            }
+
+
+
             // Network call to check mobile number already exists or not
             Intent intent1 = new Intent(EditLabourActivity.this, LabourActivity.class);
             startActivity(intent1);

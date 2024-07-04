@@ -22,7 +22,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.adapter.DashboardAdapter;
 import com.example.dihari_majduri.common.ApplicationSettings;
+import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.common.NetworkSettings;
+import com.example.dihari_majduri.common.ProgressLayoutManager;
 import com.example.dihari_majduri.pojo.Crop;
 import com.example.dihari_majduri.pojo.CropWorkDetails;
 import com.example.dihari_majduri.pojo.CropWorkType;
@@ -44,7 +46,7 @@ import java.util.Map;
 public class DashboardActivity extends AppCompatActivity {
 
 
-    private Button cropButton;
+
     private RecyclerView recyclerView;
     private ExtendedFloatingActionButton addNewDihari;
 
@@ -55,6 +57,8 @@ public class DashboardActivity extends AppCompatActivity {
     private List<CropWorkType> cropWorkTypeList=new ArrayList<>();
     private List<Labour> laboursList=new ArrayList<>();
 
+    private NetworkConnectivityManager networkConnectivityManager;
+    private ProgressLayoutManager progressLayoutManager;
     private List<LabourEmploymentPeriod> labourEmploymentPeriodList=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +75,15 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void initComponent()
     {
-      //  employeeButton=findViewById(R.id.employeeButton);
-       // cropButton=findViewById(R.id.cropButton);
+
         recyclerView=findViewById(R.id.recyclerView);
         addNewDihari = findViewById(R.id.addNewDihari);
         homeButton= findViewById(R.id.homeButton);
         employeeButton= findViewById(R.id.employeeButton);
         moreButton= findViewById(R.id.moreButton);
+        networkConnectivityManager=new NetworkConnectivityManager(this,this);
+        progressLayoutManager=new ProgressLayoutManager(this,this);
+
         addNewDihari.setOnClickListener(view -> {
             // Network call to check mobile number already exists or not
             openBottomSheet();
@@ -89,11 +95,9 @@ public class DashboardActivity extends AppCompatActivity {
             finish();
         });
 
-
         homeButton.setOnClickListener(view-> {
                 Toast.makeText(DashboardActivity.this, "Home Clicked", Toast.LENGTH_SHORT).show();
         });
-
 
 
         moreButton.setOnClickListener(View->
@@ -111,31 +115,16 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        getAllLabourEmployments();
-        getAllCrops();
-        getAllCropWorkTypes();
-        getAllLabours();
+        if(networkConnectivityManager.isConnected())
+        {
+            getAllLabourEmployments();
+            getAllCrops();
+            getAllCropWorkTypes();
+            getAllLabours();
 
-
-      /*  List<CropWorkDetails> cropWorkDetailsList = new ArrayList<>();
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 12,"Soyabean","katai"));
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 3,"Sarso","katai"));
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 12,"Soyabean","katai"));
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 3,"Sarso","katai"));
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 12,"Soyabean","katai"));
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 3,"Sarso","katai"));
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 12,"Soyabean","katai"));
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 3,"Sarso","katai"));
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 12,"Soyabean","katai"));
-        cropWorkDetailsList.add(new CropWorkDetails("2022-02-01", 3,"Sarso","katai"));
-*/
-        // Set up adapter
-       // DashboardAdapter dashboardAdapter = new DashboardAdapter(this,cropWorkDetailsList);
-
-      //  recyclerView.setLayoutManager(new LinearLayoutManager(DashboardActivity.this));
-
-       // recyclerView.setAdapter(dashboardAdapter);
-
+        }else {
+            networkConnectivityManager.showNetworkConnectivityDialog();
+        }
     }
 
     public void setDashboardEmploymentPeriod(List<LabourEmploymentPeriod> list)
@@ -152,12 +141,14 @@ public class DashboardActivity extends AppCompatActivity {
     public void getAllCrops()
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
+        progressLayoutManager.showProgressingView();
         // Define the URL to send the request to
         String url = NetworkSettings.CROP_SERVER;
         // Create a JsonObjectRequest
         StringRequest stringRequest=new StringRequest(
                 Request.Method.GET, url,
                 response->{
+                    progressLayoutManager.hideProgressingView();
                     try {
                         System.out.println("**********Employee Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
@@ -207,9 +198,11 @@ public class DashboardActivity extends AppCompatActivity {
         // Define the URL to send the request to
         String url = NetworkSettings.CROP_WORK_TYPE_SERVER;
         // Create a JsonObjectRequest
+        progressLayoutManager.showProgressingView();
         StringRequest stringRequest=new StringRequest(
                 Request.Method.GET, url,
                 response->{
+                    progressLayoutManager.hideProgressingView();
                     try {
                         System.out.println("**********Employee Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
@@ -255,11 +248,12 @@ public class DashboardActivity extends AppCompatActivity {
 
     public void getAllLabourEmployments() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url = NetworkSettings.LABOUR_EMPLOYMENT_PERIODS_SERVER + "/" + ApplicationSettings.owner_id;
-
+        String url = NetworkSettings.LABOUR_EMPLOYMENT_PERIODS_SERVER + "/" + ApplicationSettings.ownerId;
+        progressLayoutManager.showProgressingView();
         StringRequest stringRequest = new StringRequest(
                 Request.Method.GET, url,
                 response -> {
+                    progressLayoutManager.hideProgressingView();
                     try {
                         System.out.println("**********Employee Response :" + response);
                         // Parse response as a JSONObject
@@ -274,13 +268,14 @@ public class DashboardActivity extends AppCompatActivity {
 
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject job = jsonArray.getJSONObject(i);
-
+                                System.out.println("****1******");
                                 LabourEmploymentPeriod labourEmploymentPeriod = new LabourEmploymentPeriod();
-                                labourEmploymentPeriod.setDate(Date.valueOf(job.getString("date")));
+                                labourEmploymentPeriod.setDate(job.getString("date"));
+                                System.out.println("****11******");
                                 labourEmploymentPeriod.setCropName(job.getString("cropName"));
                                 labourEmploymentPeriod.setCropWorkTypeName(job.getString("cropWorkTypeName"));
                                 labourEmploymentPeriod.setLabourCount(job.getInt("labourCount"));
-
+                                System.out.println("****2******");
                                 // Parse LabourPojo array
                                 JSONArray laboursArray = job.getJSONArray("labourPojo");
                                 List<Labour> laboursList = new ArrayList<>();
@@ -293,7 +288,7 @@ public class DashboardActivity extends AppCompatActivity {
                                     laboursList.add(labourObj);
                                 }
                                 labourEmploymentPeriod.setLabours(laboursList);
-
+                                System.out.println("****3******");
                                 labourEmploymentPeriodList.add(labourEmploymentPeriod);
                             }
 
@@ -331,11 +326,13 @@ public class DashboardActivity extends AppCompatActivity {
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_SERVER+"/"+ ApplicationSettings.owner_id;
+        progressLayoutManager.showProgressingView();
+        String url = NetworkSettings.LABOUR_SERVER+"/"+ ApplicationSettings.ownerId;
         // Create a JsonObjectRequest
         StringRequest stringRequest=new StringRequest(
                 Request.Method.GET, url,
                 response->{
+                    progressLayoutManager.hideProgressingView();
                     try {
 
                         System.out.println("**********Employee Response :" + response);

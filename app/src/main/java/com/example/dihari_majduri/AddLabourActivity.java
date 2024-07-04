@@ -18,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.ApplicationSettings;
+import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.network.pojo.LabourRequest;
 import com.example.dihari_majduri.pojo.Labour;
@@ -33,6 +34,7 @@ private Button saveButton;
 private TextView nameTextView;
 private TextView mobileNumberTextView;
 private String name;
+private NetworkConnectivityManager networkConnectivityManager;
 private String mobileNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ private String mobileNumber;
 
     private void initComponent()
     {
+        networkConnectivityManager=new NetworkConnectivityManager(this,this);
         nameTextView=findViewById(R.id.name);
         mobileNumberTextView=findViewById(R.id.mobileNumber);
         ImageView backArrow = findViewById(R.id.ivToolbarBack);
@@ -61,7 +64,14 @@ private String mobileNumber;
             mobileNumber=mobileNumberTextView.getText().toString().trim();
             System.out.println("Name :"+name+",Mobile number :"+mobileNumber);
             // Save Labour Information
-            addNewLabour();
+
+            if(networkConnectivityManager.isConnected())
+            {
+                addNewLabour();
+            }else {
+                networkConnectivityManager.showNetworkConnectivityDialog();
+            }
+
 
             Intent intent1 = new Intent(AddLabourActivity.this, LabourActivity.class);
             startActivity(intent1);
@@ -74,7 +84,7 @@ private String mobileNumber;
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Create an Employer object
         Labour labour=new Labour(this.name,  this.mobileNumber);
-        LabourRequest labourRequest=new LabourRequest(labour,ApplicationSettings.owner_id);
+        LabourRequest labourRequest=new LabourRequest(labour,ApplicationSettings.ownerId);
         // Serialize the Employer object to JSON
         Gson gson = new Gson();
         String entityJSONString = gson.toJson(labourRequest);

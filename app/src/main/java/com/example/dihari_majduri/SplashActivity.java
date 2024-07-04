@@ -1,10 +1,9 @@
 package com.example.dihari_majduri;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+
 import android.os.Bundle;
-import android.widget.Button;
+
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,12 +11,27 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.ApplicationSettings;
+import com.example.dihari_majduri.common.NetworkSettings;
+import com.example.dihari_majduri.common.ProgressLayoutManager;
+import com.example.dihari_majduri.common.NetworkConnectivityManager;
+import com.example.dihari_majduri.pojo.Labour;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private Button profileButton;
-    private Button pinButton;
+    private ProgressLayoutManager progressLayoutManager;
+    NetworkConnectivityManager networkConnectivityManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,31 +49,21 @@ public class SplashActivity extends AppCompatActivity {
 
     private void initComponent()
     {
-        profileButton=findViewById(R.id.profileButton);
-        pinButton=findViewById(R.id.pinButton);
-        profileButton.setOnClickListener(view -> {
-            Intent intent1 = new Intent(SplashActivity.this, ProfileActivity.class);
-            startActivity(intent1);
-            finish();
-        });
-        pinButton.setOnClickListener(view->{
-            Intent intent1 = new Intent(SplashActivity.this, LoginActivity.class);
-            startActivity(intent1);
-            finish();
-        });
+        progressLayoutManager=new ProgressLayoutManager(this,this);
     }
     @Override
     protected void onStart() {
         super.onStart();
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
-        String mobileNumber=null;
-        mobileNumber= ApplicationSettings.getValueFromSharedPreferences(this,"mobileNumber");
+        String mobileNumber = ApplicationSettings.getValueFromSharedPreferences(this,"mobileNumber");
         if(mobileNumber==null || mobileNumber.length()==0)
         {
+
             Intent intent1 = new Intent(SplashActivity.this, ProfileActivity.class);
             startActivity(intent1);
             finish();
@@ -68,13 +72,14 @@ public class SplashActivity extends AppCompatActivity {
             ApplicationSettings.ownerFirstName=ApplicationSettings.getValueFromSharedPreferences(this,"firstName");
             ApplicationSettings.ownerLastName=ApplicationSettings.getValueFromSharedPreferences(this,"lastName");
             ApplicationSettings.ownerMobileNumber=ApplicationSettings.getValueFromSharedPreferences(this,"mobileNumber");
+            ApplicationSettings.ownerId= Integer.parseInt(ApplicationSettings.getValueFromSharedPreferences(this,"id"));
             Intent intent1 = new Intent(SplashActivity.this, LoginActivity.class);
             startActivity(intent1);
             finish();
         }
-
-
     }
+
+
 
     @Override
     protected void onPause() {

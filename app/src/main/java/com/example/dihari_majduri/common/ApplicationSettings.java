@@ -7,7 +7,7 @@ public class ApplicationSettings {
     public static String ownerFirstName;
     public static String ownerLastName;
     public static String ownerMobileNumber;
-    public static int owner_id=1;
+    public static int ownerId;
 
     public static int AUTHENTICATE=1001;
     public static int NOT_AUTHENTICATE=1000;

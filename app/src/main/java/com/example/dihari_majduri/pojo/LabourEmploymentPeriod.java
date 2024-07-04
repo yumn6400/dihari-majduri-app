@@ -6,7 +6,7 @@ import java.util.List;
 public class LabourEmploymentPeriod {
 
     private int id;
-    private Date date;
+    private String date;
     private String cropName;
     private String cropWorkTypeName;
 
@@ -22,11 +22,11 @@ public class LabourEmploymentPeriod {
         this.id = id;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

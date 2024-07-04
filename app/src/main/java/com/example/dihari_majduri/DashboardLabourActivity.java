@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class LabourActivity extends AppCompatActivity  {
+public class DashboardLabourActivity extends AppCompatActivity  {
     private ExtendedFloatingActionButton addEmployee;
     private RecyclerView recyclerView;
     private TextView homeButton ;
@@ -60,10 +60,25 @@ public class LabourActivity extends AppCompatActivity  {
         });
         initComponent();
 
+        // Retrieve the JSON string from the Intent extras
+        Intent intent = getIntent();
+        String labourListJson = intent.getStringExtra("labourList");
+        System.out.println("**************"+labourListJson);
 
+        if(labourListJson!=null)
+        {
+            // Convert the JSON string back to a list of Labour objects
+            Gson gson = new Gson();
+            Type labourListType = new TypeToken<List<Labour>>() {}.getType();
+            labour = gson.fromJson(labourListJson, labourListType);
 
-
-
+            if(networkConnectivityManager.isConnected())
+            {
+                setEmployeesData(labour);
+            }else {
+                networkConnectivityManager.showNetworkConnectivityDialog();
+            }
+        }
 
     }
 
@@ -77,23 +92,23 @@ public class LabourActivity extends AppCompatActivity  {
         networkConnectivityManager=new NetworkConnectivityManager(this,this);
         progressLayoutManager=new ProgressLayoutManager(this,this);
         employeeButton.setOnClickListener(view -> {
-            Toast.makeText(LabourActivity.this, "Employee Clicked", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DashboardLabourActivity.this, "Employee Clicked", Toast.LENGTH_SHORT).show();
         });
 
         homeButton.setOnClickListener(view-> {
-            Intent intent1 = new Intent(LabourActivity.this, DashboardActivity.class);
+            Intent intent1 = new Intent(DashboardLabourActivity.this, DashboardActivity.class);
             startActivity(intent1);
             finish();
         });
 
         moreButton.setOnClickListener(View->
         {
-            Toast.makeText(LabourActivity.this, "More Clicked", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DashboardLabourActivity.this, "More Clicked", Toast.LENGTH_SHORT).show();
         });
         addEmployee = findViewById(R.id.addEmployee);
         addEmployee.setOnClickListener(view -> {
             // Network call to check mobile number already exists or not
-            Intent intent1 = new Intent(LabourActivity.this, AddLabourActivity.class);
+            Intent intent1 = new Intent(DashboardLabourActivity.this, AddLabourActivity.class);
             startActivity(intent1);
             finish();
         });
@@ -107,77 +122,16 @@ public class LabourActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
-        if(networkConnectivityManager.isConnected())
-        {
-            getAllLabours();
-        }else {
-            networkConnectivityManager.showNetworkConnectivityDialog();
-        }
-
+        setEmployeesData(labour);
     }
 
     public void setEmployeesData(List<Labour> list)
     {
         LabourAdapter labourAdapter = new LabourAdapter(this,list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(LabourActivity.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(DashboardLabourActivity.this));
         recyclerView.setAdapter(labourAdapter);
     }
 
-    public void getAllLabours()
-    {
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        progressLayoutManager.showProgressingView();
-        // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_SERVER+"/"+ ApplicationSettings.ownerId;
-        // Create a JsonObjectRequest
-        StringRequest stringRequest=new StringRequest(
-                Request.Method.GET, url,
-                response->{
-                    progressLayoutManager.hideProgressingView();
-                    try {
-
-                        System.out.println("**********Employee Response :" + response);
-                        JSONObject jsonObject = new JSONObject(response);
-                        if ((boolean) jsonObject.get("success")) {
-                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
-                            JSONObject job;
-                            Labour labour;
-                            for (int i = 0; i < jsonArray.length(); i++)
-                            {
-                                job = (JSONObject) jsonArray.get(i);
-                                labour =new Labour();
-                                labour.setId(job.getInt("id"));
-                                labour.setName(job.getString("name"));
-                                labour.setMobileNumber(job.getString("mobileNumber"));
-                                LabourActivity.this.labour.add(labour);
-                            }
-                            setEmployeesData(LabourActivity.this.labour);
-                        }
-                    }catch(Exception e)
-                    {
-                        System.out.println(e);
-                    }
-
-                },
-                error-> {
-                    System.out.println("**********Response Error:"+error);
-                    generateServerError(error);
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json");
-                return params;
-            }
-        };
-
-        // Set retry policy
-        stringRequest.setRetryPolicy(NetworkSettings.requestPolicy);
-
-        // Add the request to the RequestQueue
-        requestQueue.add(stringRequest);
-    }
 
     // Method to handle server errors
     private void generateServerError(VolleyError error) {

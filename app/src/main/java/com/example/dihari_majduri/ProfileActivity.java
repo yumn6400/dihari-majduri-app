@@ -18,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.pojo.Labour;
 
@@ -37,6 +38,7 @@ public class ProfileActivity extends AppCompatActivity {
     private String lastName;
     private String mobileNumber;
     private TextView errorMessage;
+    private NetworkConnectivityManager networkConnectivityManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +82,7 @@ public class ProfileActivity extends AppCompatActivity {
       firstNameTextView= findViewById(R.id.firstName);
       lastNameTextView=findViewById(R.id.lastName);
       mobileNumberTextView=findViewById(R.id.mobileNumber);
-
+      networkConnectivityManager=new NetworkConnectivityManager(this,this);
      Button saveButton= findViewById(R.id.saveButton);
      errorMessage=findViewById(R.id.errorMessage);
      errorMessage.setVisibility(View.INVISIBLE);
@@ -92,7 +94,15 @@ public class ProfileActivity extends AppCompatActivity {
          System.out.println("***************First name : "+firstName);
          System.out.println("*************Last Name : "+lastName);
          System.out.println("******************Mobile number :"+mobileNumber);
-         checkMobileNumberExists(mobileNumber);
+
+         if(networkConnectivityManager.isConnected())
+         {
+             checkMobileNumberExists(mobileNumber);
+         }else {
+             networkConnectivityManager.showNetworkConnectivityDialog();
+         }
+
+
      });
     }
 
@@ -106,8 +116,6 @@ public class ProfileActivity extends AppCompatActivity {
         startActivity(intent1);
         finish();
     }
-
-
 
     public void checkMobileNumberExists(String mobileNumber)
     {
