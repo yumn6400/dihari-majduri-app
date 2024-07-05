@@ -18,6 +18,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.adapter.DashboardLabourAdapter;
 import com.example.dihari_majduri.adapter.LabourAdapter;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
@@ -52,7 +53,7 @@ public class DashboardLabourActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_labour);
+        setContentView(R.layout.activity_dashboard_labour);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -127,17 +128,12 @@ public class DashboardLabourActivity extends AppCompatActivity  {
 
     public void setEmployeesData(List<Labour> list)
     {
-        LabourAdapter labourAdapter = new LabourAdapter(this,list);
+        DashboardLabourAdapter dashboardLabourAdapter = new DashboardLabourAdapter(this,list);
         recyclerView.setLayoutManager(new LinearLayoutManager(DashboardLabourActivity.this));
-        recyclerView.setAdapter(labourAdapter);
+        recyclerView.setAdapter(dashboardLabourAdapter);
     }
 
 
-    // Method to handle server errors
-    private void generateServerError(VolleyError error) {
-        // Handle the error response here
-        error.printStackTrace();
-    }
 
     @Override
     protected void onPause() {

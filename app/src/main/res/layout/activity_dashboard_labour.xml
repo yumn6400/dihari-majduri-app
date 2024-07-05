@@ -58,7 +58,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchBox"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
-        tools:listitem="@layout/item_labours" />
+        tools:listitem="@layout/item_dashboard_labours" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/addEmployee"
