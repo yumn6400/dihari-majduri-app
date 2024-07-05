@@ -59,7 +59,7 @@ public class LabourActivity extends AppCompatActivity  {
             return insets;
         });
         initComponent();
-
+        setListener();
 
 
 
@@ -76,16 +76,18 @@ public class LabourActivity extends AppCompatActivity  {
         moreButton= findViewById(R.id.moreButton);
         networkConnectivityManager=new NetworkConnectivityManager(this,this);
         progressLayoutManager=new ProgressLayoutManager(this,this);
+    }
+
+    private void setListener()
+    {
         employeeButton.setOnClickListener(view -> {
             Toast.makeText(LabourActivity.this, "Employee Clicked", Toast.LENGTH_SHORT).show();
         });
-
         homeButton.setOnClickListener(view-> {
             Intent intent1 = new Intent(LabourActivity.this, DashboardActivity.class);
             startActivity(intent1);
             finish();
         });
-
         moreButton.setOnClickListener(View->
         {
             Toast.makeText(LabourActivity.this, "More Clicked", Toast.LENGTH_SHORT).show();

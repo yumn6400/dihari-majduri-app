@@ -1,38 +1,17 @@
 package com.example.dihari_majduri;
 
 import android.content.Intent;
-
 import android.os.Bundle;
-
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.ApplicationSettings;
-import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.common.ProgressLayoutManager;
-import com.example.dihari_majduri.common.NetworkConnectivityManager;
-import com.example.dihari_majduri.pojo.Labour;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SplashActivity extends AppCompatActivity {
-
     private ProgressLayoutManager progressLayoutManager;
-    NetworkConnectivityManager networkConnectivityManager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +22,6 @@ public class SplashActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
         initComponent();
     }
 
@@ -55,15 +33,12 @@ public class SplashActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
     }
-
-
     @Override
     protected void onResume() {
         super.onResume();
         String mobileNumber = ApplicationSettings.getValueFromSharedPreferences(this,"mobileNumber");
         if(mobileNumber==null || mobileNumber.length()==0)
         {
-
             Intent intent1 = new Intent(SplashActivity.this, ProfileActivity.class);
             startActivity(intent1);
             finish();
@@ -78,9 +53,6 @@ public class SplashActivity extends AppCompatActivity {
             finish();
         }
     }
-
-
-
     @Override
     protected void onPause() {
         super.onPause();

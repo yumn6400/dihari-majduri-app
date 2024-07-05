@@ -1,6 +1,8 @@
 package com.example.dihari_majduri;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,26 +16,16 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.dihari_majduri.common.ApplicationSettings;
-import com.example.dihari_majduri.common.NetworkSettings;
-import com.example.dihari_majduri.network.pojo.DihariRequest;
-import com.example.dihari_majduri.network.pojo.LabourRequest;
+import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.pojo.CropWorkType;
 import com.example.dihari_majduri.pojo.Labour;
-import com.example.dihari_majduri.pojo.Owner;
+import com.example.dihari_majduri.pojo.LabourEmploymentPeriod;
+import com.example.dihari_majduri.services.DashboardService;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputLayout;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -42,74 +34,76 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-
 import com.example.dihari_majduri.pojo.Crop;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
-
     private Spinner spinnerCrop;
     private Spinner spinnerCropWorkType;
     private TextView textViewSelectDate;
     private TextInputLayout textInputLayoutEmployee;
     private MultiAutoCompleteTextView multiAutoCompleteTextViewEmployee;
-
-     private static List<Labour> laboursList=new ArrayList<>();
     private static List<String> cropsNameArray = new ArrayList<>();
-
     private static List<String> cropWorkTypesNameArray = new ArrayList<>();
-
     private static List<String> laboursNameArray =new ArrayList<>();
-    private List<String> employeesArray = new ArrayList<>();
-
+    private static List<Labour> laboursList=new ArrayList<>();
     private Button buttonSave;
     private Set<String> employeesSet;
+    private NetworkConnectivityManager networkConnectivityManager;
+    private Context context;
+    private Activity activity;
+    private DashboardService dashboardService;
+
+    private List<LabourEmploymentPeriod> labourEmploymentPeriodList=new ArrayList<>();
+
+
+    public DihariBottomSheetFragment(Context context, Activity activity,DashboardService dashboardService)
+    {
+        this.context=context;
+        this.activity=activity;
+        this.dashboardService=dashboardService;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.add_dihari_bottom_sheet, container, false);
-
+       View view = inflater.inflate(R.layout.add_dihari_bottom_sheet, container, false);
+         initCommponent(view);
+         setListener();
+         return view;
+    }
+    private void initCommponent(View view)
+    {
         spinnerCrop = view.findViewById(R.id.spinnerCrop);
         spinnerCropWorkType = view.findViewById(R.id.spinnerCropWorkType);
         textViewSelectDate = view.findViewById(R.id.textViewSelectDate);
         buttonSave = view.findViewById(R.id.buttonSave);
         textInputLayoutEmployee = view.findViewById(R.id.textInputLayoutEmployee);
         multiAutoCompleteTextViewEmployee = view.findViewById(R.id.multiAutoCompleteTextViewEmployee);
-
-        // Initialize the spinners with the defined arrays
+        networkConnectivityManager=new NetworkConnectivityManager(context,activity);
         ArrayAdapter<String> cropAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, cropsNameArray);
         cropAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCrop.setAdapter(cropAdapter);
-
         ArrayAdapter<String> cropWorkTypeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, cropWorkTypesNameArray);
         cropWorkTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCropWorkType.setAdapter(cropWorkTypeAdapter);
-
-        // Initialize MultiAutoCompleteTextView for employees
         ArrayAdapter<String> employeeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, laboursNameArray);
         multiAutoCompleteTextViewEmployee.setAdapter(employeeAdapter);
         multiAutoCompleteTextViewEmployee.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         multiAutoCompleteTextViewEmployee.addTextChangedListener(new SearchEmployeeListener());
-
         employeesSet = new HashSet<>();
-        for (String employee : employeesArray) {
+        for (String employee : laboursNameArray) {
             employeesSet.add(employee.toLowerCase());
         }
-
-        // Set up date picker
+    }
+    private void setListener()
+    {
         textViewSelectDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePickerDialog();
             }
         });
-
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,7 +113,7 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
                 String date = textViewSelectDate.getText().toString();
                 String employee = multiAutoCompleteTextViewEmployee.getText().toString();
 
-                if (crop.isEmpty() || cropWorkType.isEmpty() || date.isEmpty() || employee.isEmpty()) {
+                if (crop.isEmpty() || cropWorkType.isEmpty() || date.isEmpty() || date.equalsIgnoreCase("Select Date") || employee.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
                 } else {
                     // Handle the save action
@@ -130,16 +124,34 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
                 System.out.println("Crop work type :"+cropWorkType);
                 System.out.println("Date :"+date);
                 System.out.println("Employee :"+employee);
-               // saveInformation(crop,cropWorkType,date,employee);
+                // saveInformation(crop,cropWorkType,date,employee);
                 List<Labour> selectedLabours = getSelectedLabours(employee, laboursList);
 
-                saveInformation(crop, cropWorkType, date, selectedLabours);
+                if(networkConnectivityManager.isConnected())
+                {
+                dashboardService.saveNewLabourInformation (crop, cropWorkType, date, selectedLabours);
+                dashboardService.getAllLabourEmployments();
+                }else {
+                    networkConnectivityManager.showNetworkConnectivityDialog();
+                }
             }
         });
-
-        return view;
     }
+    private void showDatePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        textViewSelectDate.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+                    }
+                }, year, month, day);
+        datePickerDialog.show();
+    }
     private List<Labour> getSelectedLabours(String employeeNames, List<Labour> labourList) {
         StringTokenizer tokenizer = new StringTokenizer(employeeNames, ", ");
         Map<String, Labour> labourMap = new HashMap<>();
@@ -159,73 +171,11 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
         return selectedLabours;
     }
 
-    public void saveInformation(String crop, String cropWorkType, String date, List<Labour> selectedLabours) {
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-
-        // Serialize the list of Labour objects to JSON
-
-        DihariRequest dihariRequest=new DihariRequest(crop,cropWorkType,date,selectedLabours);
-        Gson gson = new Gson();
-        String entityJSONString = gson.toJson(dihariRequest);
-        System.out.println("*******JSON STRING :"+entityJSONString);
-        // Create a JSONObject from the JSON string
-        JSONObject entityJSON = null;
-        try {
-            entityJSON = new JSONObject(entityJSONString);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_EMPLOYMENT_PERIODS_SERVER+"/"+ ApplicationSettings.ownerId;
-
-        // Create a JsonObjectRequest
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.POST, url, entityJSON,
-                response -> {
-                    System.out.println("**********Response :" + response);
-                    // Handle the server's response here
-                },
-                error -> {
-                    System.out.println("**********Response Error:" + error);
-                    generateServerError(error);
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json");
-                return params;
-            }
-        };
-
-        // Set retry policy
-        jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
-
-        // Add the request to the RequestQueue
-        requestQueue.add(jsonObjectRequest);
-    }
 
 
     private void generateServerError(VolleyError error) {
         // Handle the error response here
         error.printStackTrace();
-    }
-
-    private void showDatePickerDialog() {
-        final Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        textViewSelectDate.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
-                    }
-                }, year, month, day);
-        datePickerDialog.show();
     }
 
     public static void setCrops(List<Crop> crops) {
@@ -235,7 +185,6 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
             cropsNameArray.add(crop.getName());
         }
     }
-
     public static void setCropWorkTypes(List<CropWorkType> cropWorkTypes) {
         cropWorkTypesNameArray.clear();
         for (CropWorkType cropWorkType : cropWorkTypes)
@@ -243,7 +192,6 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
             cropWorkTypesNameArray.add(cropWorkType.getName());
         }
     }
-
     public static void setLabours(List<Labour> labours) {
         laboursList=labours;
         laboursNameArray.clear();
@@ -252,17 +200,14 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
             laboursNameArray.add(labour.getName());
         }
     }
-
     public class SearchEmployeeListener implements TextWatcher {
 
         public SearchEmployeeListener() {
         }
-
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             textInputLayoutEmployee.setError(null); // Clear error message
         }
-
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             String input = s.toString().toLowerCase();
@@ -286,7 +231,6 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
             }
             textInputLayoutEmployee.setError(null);
         }
-
         @Override
         public void afterTextChanged(Editable editable) {
         }

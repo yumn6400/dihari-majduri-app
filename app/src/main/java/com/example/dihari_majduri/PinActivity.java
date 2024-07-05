@@ -6,31 +6,24 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.inputmethod.InputMethodManager;
-
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.pojo.Owner;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.google.gson.Gson;
-
 import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,6 +58,7 @@ public class PinActivity extends AppCompatActivity {
         this.lastName=intent.getStringExtra("lastName");
         this.mobileNumber=intent.getStringExtra("mobileNumber");
         initComponent();
+        setListener();
     }
 
     private void initComponent()
@@ -77,6 +71,10 @@ public class PinActivity extends AppCompatActivity {
         errorMessage=findViewById(R.id.errorMessage);
         errorMessage.setVisibility(TextView.INVISIBLE);
         networkConnectivityManager=new NetworkConnectivityManager(this,this);
+    }
+
+    private void setListener()
+    {
         pin1.addTextChangedListener(new PinValidator(pin1,pin2,null));
         pin2.addTextChangedListener(new PinValidator(pin2,pin3,pin1));
         pin3.addTextChangedListener(new PinValidator(pin3,pin4,pin2));
@@ -84,54 +82,19 @@ public class PinActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    public void networkCall() {
+    public void addOwner() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-        // Create an Owner object
         Owner owner = new Owner(this.firstName, this.lastName, this.mobileNumber, this.pin);
-
-        // Serialize the Owner object to JSON
         Gson gson = new Gson();
         String entityJSONString = gson.toJson(owner);
         System.out.println("*******JSON STRING :" + entityJSONString);
-
-        // Create a JSONObject from the JSON string
         JSONObject entityJSON = null;
         try {
             entityJSON = new JSONObject(entityJSONString);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // Define the URL to send the request to
         String url = NetworkSettings.OWNER_SERVER;
-
-        // Create a JsonObjectRequest
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
@@ -140,22 +103,24 @@ public class PinActivity extends AppCompatActivity {
                     try {
                         System.out.println("**********Response :" + response.toString());
                         if (response.getBoolean("success")) {
-                            // Get the data object from the response
                             JSONObject jsonObject = response.getJSONObject("data");
-                            // Extract the ID and other details from the response
                             int id = jsonObject.getInt("id");
                             String firstName = jsonObject.getString("firstName");
                             String lastName = jsonObject.getString("lastName");
                             String mobileNumber = jsonObject.getString("mobileNumber");
-
-                            // Save the details to shared preferences
                             ApplicationSettings.saveToSharedPreferences(this, "id", String.valueOf(id));
                             ApplicationSettings.saveToSharedPreferences(this, "firstName", firstName);
                             ApplicationSettings.saveToSharedPreferences(this, "lastName", lastName);
                             ApplicationSettings.saveToSharedPreferences(this, "mobileNumber", mobileNumber);
 
-                            // Navigate to the next activity
+                            ApplicationSettings.ownerFirstName=firstName;
+                            ApplicationSettings.ownerLastName=lastName;
+                            ApplicationSettings.ownerMobileNumber=mobileNumber;
+
                             nextActivity();
+                        }
+                        else {
+                            //some code if success is false
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -173,11 +138,7 @@ public class PinActivity extends AppCompatActivity {
                 return params;
             }
         };
-
-        // Set retry policy
         jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
-
-        // Add the request to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
 
@@ -187,13 +148,12 @@ public class PinActivity extends AppCompatActivity {
         // Handle the error response here
         error.printStackTrace();
     }
-    public void addEmployer()
+    public void networkCall()
     {
     System.out.println("****************************Generated PIN :"+pin);
-    // Network call to send data to server
         if(networkConnectivityManager.isConnected())
         {
-            networkCall();
+            addOwner();
         }else {
             networkConnectivityManager.showNetworkConnectivityDialog();
         }
@@ -201,11 +161,7 @@ public class PinActivity extends AppCompatActivity {
 
     public void nextActivity()
     {
-
         Intent intent1 = new Intent(PinActivity.this, DashboardActivity.class);
-        intent1.putExtra("firstName",firstName);
-        intent1.putExtra("lastName",lastName);
-        intent1.putExtra("mobileNumber",mobileNumber);
         startActivity(intent1);
         finish();
     }
@@ -261,7 +217,7 @@ public class PinActivity extends AppCompatActivity {
                     else {
                         errorMessage.setVisibility(TextView.INVISIBLE);
                         closeKeyboard();
-                        addEmployer();
+                        networkCall();
                     }
 
                 }
@@ -287,4 +243,29 @@ public class PinActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {
         }
     }
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
 }

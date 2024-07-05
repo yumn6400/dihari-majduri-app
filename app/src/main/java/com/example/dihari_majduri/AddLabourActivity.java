@@ -84,10 +84,10 @@ private String mobileNumber;
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Create an Employer object
         Labour labour=new Labour(this.name,  this.mobileNumber);
-        LabourRequest labourRequest=new LabourRequest(labour,ApplicationSettings.ownerId);
+
         // Serialize the Employer object to JSON
         Gson gson = new Gson();
-        String entityJSONString = gson.toJson(labourRequest);
+        String entityJSONString = gson.toJson(labour);
         System.out.println("*******JSON STRING :"+entityJSONString);
         // Create a JSONObject from the JSON string
         JSONObject entityJSON = null;
@@ -97,7 +97,7 @@ private String mobileNumber;
             e.printStackTrace();
         }
         // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_SERVER;
+        String url = NetworkSettings.LABOUR_SERVER+"/"+ApplicationSettings.ownerId;
         // Create a JsonObjectRequest
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST, url, entityJSON,
