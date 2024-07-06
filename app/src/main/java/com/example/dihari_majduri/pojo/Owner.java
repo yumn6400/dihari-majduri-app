@@ -1,20 +1,36 @@
 package com.example.dihari_majduri.pojo;
 
 public class Owner {
+    private int id;
     private String firstName;
     private String lastName;
     private String mobileNumber;
     private String pin;
 
     // Constructor
-    public Owner(String firstName, String lastName, String mobileNumber, String pin) {
+    public Owner( String firstName, String lastName, String mobileNumber, String pin) {
+
         this.firstName = firstName;
         this.lastName = lastName;
         this.mobileNumber = mobileNumber;
         this.pin = pin;
     }
 
+    public Owner(int id ,String firstName, String lastName, String mobileNumber) {
+        this.id=id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.mobileNumber = mobileNumber;
+    }
+
     // Getter and Setter for firstName
+    public void setId(int id){
+        this.id=id;
+    }
+    public int getId()
+    {
+        return this.id;
+    }
     public String getFirstName() {
         return firstName;
     }

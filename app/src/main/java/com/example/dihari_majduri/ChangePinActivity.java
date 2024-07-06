@@ -20,15 +20,16 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
+import com.example.dihari_majduri.pojo.ChangePin;
+import com.example.dihari_majduri.pojo.Owner;
 import com.example.dihari_majduri.common.NetworkSettings;
-import com.example.dihari_majduri.network.pojo.LoginRequest;
 import com.google.gson.Gson;
-import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginActivity extends AppCompatActivity {
+public class ChangePinActivity extends AppCompatActivity {
+
     private EditText pin1;
     private EditText pin2;
     private EditText pin3;
@@ -38,19 +39,22 @@ public class LoginActivity extends AppCompatActivity {
     private String pin;
     private int pinCount=0;
     private NetworkConnectivityManager networkConnectivityManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_pin);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         initComponent();
         setListener();
     }
+
     private void initComponent()
     {
         pin1=findViewById(R.id.pin1);
@@ -62,62 +66,48 @@ public class LoginActivity extends AppCompatActivity {
         errorMessage.setVisibility(TextView.INVISIBLE);
         networkConnectivityManager=new NetworkConnectivityManager(this,this);
     }
-    public void setListener()
-    {
-        pin1.addTextChangedListener(new LoginActivity.PinValidator(pin1,pin2,null));
-        pin2.addTextChangedListener(new LoginActivity.PinValidator(pin2,pin3,pin1));
-        pin3.addTextChangedListener(new LoginActivity.PinValidator(pin3,pin4,pin2));
-        pin4.addTextChangedListener(new LoginActivity.PinValidator(pin4,null,pin3));
-    }
-    public void nextActivity()
-    {
-        System.out.println("****************************Generated PIN :"+pin);
-        errorMessage.setVisibility(TextView.INVISIBLE);
-        Intent intent1 = new Intent(LoginActivity.this, DashboardActivity.class);
-        startActivity(intent1);
-        finish();
 
-    }
-    public void verifyPin(String pinStr)
+    private void setListener()
     {
+        pin1.addTextChangedListener(new PinValidator(pin1,pin2,null));
+        pin2.addTextChangedListener(new PinValidator(pin2,pin3,pin1));
+        pin3.addTextChangedListener(new PinValidator(pin3,pin4,pin2));
+        pin4.addTextChangedListener(new PinValidator(pin4,null,pin3));
+    }
+
+
+    public void addOwner() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        LoginRequest loginRequest = new LoginRequest(ApplicationSettings.ownerMobileNumber, pinStr);
+        ChangePin changePin = new ChangePin(ApplicationSettings.ownerId, this.pin);
         Gson gson = new Gson();
-        String entityJSONString = gson.toJson(loginRequest);
-        System.out.println("*******JSON STRING :"+entityJSONString);
-        // Create a JSONObject from the JSON string
+        String entityJSONString = gson.toJson(changePin);
+        System.out.println("*******JSON STRING :" + entityJSONString);
         JSONObject entityJSON = null;
         try {
             entityJSON = new JSONObject(entityJSONString);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String url = NetworkSettings.OWNER_SERVER+"/validateOwnerPin";
+        String url = NetworkSettings.OWNER_SERVER+"/changePin";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.POST, url, entityJSON,
-                response->{
+                Request.Method.PUT,
+                url,
+                entityJSON,
+                response -> {
                     try {
-                        if(response.getBoolean("success"))
-                        {
-                            nextActivity();
+                        System.out.println("**********Response :" + response.toString());
+                        if (response.getBoolean("success")) {
+                            finish();
                         }
-                        else
-                        {
-                            errorMessage.setVisibility(TextView.VISIBLE);
+                        else {
+                            //some code if success is false
                         }
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 },
-                error-> {
-                    errorMessage.setVisibility(TextView.VISIBLE);
-                    System.out.println("**********Response Error:"+error);
-                    pin1.setText("");
-                    pin2.setText("");
-                    pin3.setText("");
-                    pin4.setText("");
-                    focusAndShowKeyboard(pin1);
-                    pinCount=0;
+                error -> {
+                    System.out.println("**********Response Error:" + error.toString());
                     generateServerError(error);
                 }
         ) {
@@ -131,9 +121,25 @@ public class LoginActivity extends AppCompatActivity {
         jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
         requestQueue.add(jsonObjectRequest);
     }
+
+
+    // Method to handle server errors
     private void generateServerError(VolleyError error) {
+        // Handle the error response here
         error.printStackTrace();
     }
+    public void networkCall()
+    {
+        System.out.println("****************************Generated PIN :"+pin);
+        if(networkConnectivityManager.isConnected())
+        {
+            addOwner();
+        }else {
+            networkConnectivityManager.showNetworkConnectivityDialog();
+        }
+    }
+
+
     public class PinValidator implements TextWatcher {
         private final EditText editText;
         private final EditText next;
@@ -145,9 +151,11 @@ public class LoginActivity extends AppCompatActivity {
             this.next = next;
             this.prev = prev;
         }
+
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
         }
+
         @Override
         public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
             if (count == 1) {
@@ -163,14 +171,42 @@ public class LoginActivity extends AppCompatActivity {
                 String pin2Str=pin2.getText().toString().trim();
                 String pin3Str=pin3.getText().toString().trim();
                 String pin4Str=pin4.getText().toString().trim();
-                pin=pin1Str+pin2Str+pin3Str+pin4Str;
-                if(networkConnectivityManager.isConnected())
+                if(pin==null)
                 {
-                    verifyPin(pin);
+                    pin=pin1Str+pin2Str+pin3Str+pin4Str;
+                    System.out.println("PIN :"+pin);
+                    pin1.setText("");
+                    pin2.setText("");
+                    pin3.setText("");
+                    pin4.setText("");
+                    focusAndShowKeyboard(pin1);
+                    pinEntryMessage.setText("Confirm MPIN");
+                    pinCount=0;
                 }else {
-                    networkConnectivityManager.showNetworkConnectivityDialog();
+                    if(!pin.equals(pin1Str+pin2Str+pin3Str+pin4Str))
+                    {
+                        errorMessage.setVisibility(TextView.VISIBLE);
+                    }
+                    else {
+                        errorMessage.setVisibility(TextView.INVISIBLE);
+                        closeKeyboard();
+                        networkCall();
+                    }
+
                 }
+
             }
+        }
+        private void focusAndShowKeyboard(EditText target) {
+            if (target != null) {
+                target.requestFocus();
+                showSoftInput(target);
+            }
+        }
+
+        private void showSoftInput(EditText target) {
+            InputMethodManager imm = (InputMethodManager) target.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(target, InputMethodManager.SHOW_IMPLICIT);
         }
         private void closeKeyboard() {
             InputMethodManager inputManager = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -180,32 +216,26 @@ public class LoginActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {
         }
     }
-    private void focusAndShowKeyboard(EditText target) {
-        if (target != null) {
-            target.requestFocus();
-            showSoftInput(target);
-        }
-    }
-    private void showSoftInput(EditText target) {
-        InputMethodManager imm = (InputMethodManager) target.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(target, InputMethodManager.SHOW_IMPLICIT);
-    }
     @Override
     protected void onStart() {
         super.onStart();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
     }
+
     @Override
     protected void onPause() {
         super.onPause();
     }
+
     @Override
     protected void onStop() {
         super.onStop();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

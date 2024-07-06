@@ -5,7 +5,14 @@ public class Labour {
     private String mobileNumber;
     private int id;
     public Labour(){}
-    public Labour(String name, String mobileNumber) {
+
+    public Labour( String name, String mobileNumber) {
+
+        this.name = name;
+        this.mobileNumber = mobileNumber;
+    }
+    public Labour(int id , String name, String mobileNumber) {
+        this.id = id;
         this.name = name;
         this.mobileNumber = mobileNumber;
     }

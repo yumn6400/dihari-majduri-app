@@ -7,4 +7,9 @@
     <color name="offGrey">#707070</color>
     <color name="textGray">#585858</color>
     <color name="grey">#E5E5F0</color>
+    <color name="button_pressed_color">#FFCC00</color>
+    <color name="button_default_color">#FFFFFF</color>
+    <color name="checkbox_checked_color">#FFCC00</color>
+    <color name="checkbox_unchecked_color">#000000</color>
+
 </resources>

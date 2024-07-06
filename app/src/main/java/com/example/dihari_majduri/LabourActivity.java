@@ -45,7 +45,7 @@ public class LabourActivity extends AppCompatActivity  {
     private TextView employeeButton;
     private TextView moreButton;
     private ProgressLayoutManager progressLayoutManager;
-    private List<Labour> labour;
+    private List<Labour> labours;
     private NetworkConnectivityManager networkConnectivityManager;
 
     @Override
@@ -60,16 +60,11 @@ public class LabourActivity extends AppCompatActivity  {
         });
         initComponent();
         setListener();
-
-
-
-
-
     }
 
     private void initComponent()
     {
-        labour =new ArrayList<>();
+        labours =new ArrayList<>();
         recyclerView=findViewById(R.id.recyclerView);
         homeButton= findViewById(R.id.homeButton);
         employeeButton= findViewById(R.id.employeeButton);
@@ -117,14 +112,12 @@ public class LabourActivity extends AppCompatActivity  {
         }
 
     }
-
     public void setEmployeesData(List<Labour> list)
     {
         LabourAdapter labourAdapter = new LabourAdapter(this,list);
         recyclerView.setLayoutManager(new LinearLayoutManager(LabourActivity.this));
         recyclerView.setAdapter(labourAdapter);
     }
-
     public void getAllLabours()
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -137,9 +130,9 @@ public class LabourActivity extends AppCompatActivity  {
                 response->{
                     progressLayoutManager.hideProgressingView();
                     try {
-
                         System.out.println("**********Employee Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
+                        this.labours.clear();
                         if ((boolean) jsonObject.get("success")) {
                             JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
                             JSONObject job;
@@ -151,9 +144,9 @@ public class LabourActivity extends AppCompatActivity  {
                                 labour.setId(job.getInt("id"));
                                 labour.setName(job.getString("name"));
                                 labour.setMobileNumber(job.getString("mobileNumber"));
-                                LabourActivity.this.labour.add(labour);
+                                this.labours.add(labour);
                             }
-                            setEmployeesData(LabourActivity.this.labour);
+                            setEmployeesData(this.labours);
                         }
                     }catch(Exception e)
                     {
@@ -173,10 +166,8 @@ public class LabourActivity extends AppCompatActivity  {
                 return params;
             }
         };
-
         // Set retry policy
         stringRequest.setRetryPolicy(NetworkSettings.requestPolicy);
-
         // Add the request to the RequestQueue
         requestQueue.add(stringRequest);
     }

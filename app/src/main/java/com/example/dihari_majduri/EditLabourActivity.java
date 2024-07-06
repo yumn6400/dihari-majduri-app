@@ -79,8 +79,6 @@ public class EditLabourActivity extends AppCompatActivity {
                 networkConnectivityManager.showNetworkConnectivityDialog();
             }
 
-
-
             // Network call to check mobile number already exists or not
             Intent intent1 = new Intent(EditLabourActivity.this, LabourActivity.class);
             startActivity(intent1);
@@ -92,7 +90,7 @@ public class EditLabourActivity extends AppCompatActivity {
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Create an Employer object
-        Labour labour=new Labour(this.name,  this.mobileNumber);
+        Labour labour=new Labour(this.id , this.name,  this.mobileNumber);
         // Serialize the Employer object to JSON
         Gson gson = new Gson();
         String entityJSONString = gson.toJson(labour);
@@ -105,7 +103,7 @@ public class EditLabourActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_SERVER + "/" + id;
+        String url = NetworkSettings.LABOUR_SERVER;
         // Create a JsonObjectRequest
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.PUT, url, entityJSON,

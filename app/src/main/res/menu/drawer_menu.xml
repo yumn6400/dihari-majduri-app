@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_profile"
+        android:title="Profile"/>
+    <item
+        android:id="@+id/nav_change_pin"
+        android:title="Change Pin"/>
+    <item
+        android:id="@+id/nav_change_language"
+        android:title="Change Language"/>
+    <item
+        android:id="@+id/nav_about_us"
+        android:title="About Us"/>
+    <item
+        android:id="@+id/nav_contact_us"
+        android:title="Contact Us"/>
+    <item
+        android:id="@+id/nav_privacy_policy"
+        android:title="Privacy Policy"/>
+</menu>
