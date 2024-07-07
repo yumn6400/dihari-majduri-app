@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,7 +45,7 @@ public class ChangePinActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_pin);
+        setContentView(R.layout.activity_change_pin);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -65,6 +66,10 @@ public class ChangePinActivity extends AppCompatActivity {
         errorMessage=findViewById(R.id.errorMessage);
         errorMessage.setVisibility(TextView.INVISIBLE);
         networkConnectivityManager=new NetworkConnectivityManager(this,this);
+        TextView activityName = findViewById(R.id.tvActivityName);
+        activityName.setText("Change Pin");
+        ImageView backArrow = findViewById(R.id.ivToolbarBack);
+        backArrow.setOnClickListener(view -> finish());
     }
 
     private void setListener()
