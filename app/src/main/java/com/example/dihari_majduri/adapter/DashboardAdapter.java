@@ -10,10 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.dihari_majduri.DashboardLabourActivity;
-import com.example.dihari_majduri.LabourActivity;
+import com.example.dihari_majduri.Activities.DashboardLabourActivity;
 import com.example.dihari_majduri.R;
-import com.example.dihari_majduri.pojo.CropWorkDetails;
 import com.example.dihari_majduri.pojo.LabourEmploymentPeriod;
 import com.google.gson.Gson;
 
@@ -43,7 +41,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
         holder.cropName.setText(labourEmploymentPeriod.getCropName());
         holder.cropWorkType.setText(labourEmploymentPeriod.getCropWorkTypeName());
         holder.dateOfWork.setText(labourEmploymentPeriod.getDate().toString());
-        holder.employeeCount.setText("Employees: "+labourEmploymentPeriod.getLabourCount());
+        holder.labourCount.setText("Labours: "+labourEmploymentPeriod.getLabourCount());
     }
 
     @Override
@@ -55,7 +53,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 
         TextView cropName;
         TextView cropWorkType;
-        TextView employeeCount;
+        TextView labourCount;
         TextView dateOfWork;
 
         public DashboardViewHolder(@NonNull View itemView) {
@@ -63,7 +61,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
             cropName = itemView.findViewById(R.id.cropName);
             cropWorkType = itemView.findViewById(R.id.cropWorkType);
             dateOfWork = itemView.findViewById(R.id.dateOfWork);
-            employeeCount = itemView.findViewById(R.id.employeeCount);
+            labourCount = itemView.findViewById(R.id.labourCount);
             itemView.setOnClickListener(this);
         }
 

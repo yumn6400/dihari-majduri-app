@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditProfileActivity">
+    tools:context=".Activities.EditProfileActivity">
 
     <include
      android:id="@+id/includedToolbar"
@@ -50,31 +50,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <EditText
-        android:id="@+id/mobileNumber"
-        android:layout_width="@dimen/_200sdp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Mobile Number"
-        android:layout_marginTop="@dimen/_25sdp"
-        android:inputType="phone"
-        app:layout_constraintTop_toBottomOf="@+id/lastName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-    <TextView
-        android:id="@+id/errorMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginLeft="@dimen/_100sdp"
-        android:text="Mobile Number already exists"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/_12ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.41"
-        app:layout_constraintTop_toBottomOf="@id/mobileNumber"
-        app:layout_constraintStart_toStartOf="parent"
-        />
 
     <Button
         android:id="@+id/saveButton"
@@ -82,7 +57,7 @@
         android:layout_height="@dimen/_40sdp"
         android:layout_marginTop="68dp"
         android:text="Ok"
-        app:layout_constraintTop_toBottomOf="@+id/mobileNumber"
+        app:layout_constraintTop_toBottomOf="@+id/lastName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

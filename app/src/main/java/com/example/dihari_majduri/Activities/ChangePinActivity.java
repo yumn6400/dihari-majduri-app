@@ -1,7 +1,6 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,10 +18,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.pojo.ChangePin;
-import com.example.dihari_majduri.pojo.Owner;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.google.gson.Gson;
 import org.json.JSONObject;
@@ -81,9 +80,9 @@ public class ChangePinActivity extends AppCompatActivity {
     }
 
 
-    public void addOwner() {
+    public void addFarmer() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        ChangePin changePin = new ChangePin(ApplicationSettings.ownerId, this.pin);
+        ChangePin changePin = new ChangePin(ApplicationSettings.farmerId, this.pin);
         Gson gson = new Gson();
         String entityJSONString = gson.toJson(changePin);
         System.out.println("*******JSON STRING :" + entityJSONString);
@@ -93,7 +92,7 @@ public class ChangePinActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String url = NetworkSettings.OWNER_SERVER+"/changePin";
+        String url = NetworkSettings.FARMER_SERVER+"/changePin";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.PUT,
                 url,
@@ -138,7 +137,7 @@ public class ChangePinActivity extends AppCompatActivity {
         System.out.println("****************************Generated PIN :"+pin);
         if(networkConnectivityManager.isConnected())
         {
-            addOwner();
+            addFarmer();
         }else {
             networkConnectivityManager.showNetworkConnectivityDialog();
         }

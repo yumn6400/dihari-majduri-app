@@ -1,4 +1,4 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,9 +18,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.common.ApplicationSettings;
+import com.example.dihari_majduri.common.ErrorCode;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
-import com.example.dihari_majduri.pojo.Owner;
+import com.example.dihari_majduri.pojo.Farmer;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.google.gson.Gson;
 import org.json.JSONObject;
@@ -82,11 +84,11 @@ public class PinActivity extends AppCompatActivity {
     }
 
 
-    public void addOwner() {
+    public void addFarmer() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        Owner owner = new Owner(this.firstName, this.lastName, this.mobileNumber, this.pin);
+        Farmer farmer = new Farmer(this.firstName, this.lastName, this.mobileNumber, this.pin);
         Gson gson = new Gson();
-        String entityJSONString = gson.toJson(owner);
+        String entityJSONString = gson.toJson(farmer);
         System.out.println("*******JSON STRING :" + entityJSONString);
         JSONObject entityJSON = null;
         try {
@@ -94,7 +96,7 @@ public class PinActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String url = NetworkSettings.OWNER_SERVER;
+        String url = NetworkSettings.FARMER_SERVER;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
@@ -105,22 +107,23 @@ public class PinActivity extends AppCompatActivity {
                         if (response.getBoolean("success")) {
                             JSONObject jsonObject = response.getJSONObject("data");
                             int id = jsonObject.getInt("id");
-                            String firstName = jsonObject.getString("firstName");
-                            String lastName = jsonObject.getString("lastName");
-                            String mobileNumber = jsonObject.getString("mobileNumber");
+                            System.out.println("****ID :"+id);
                             ApplicationSettings.saveToSharedPreferences(this, "id", String.valueOf(id));
-                            ApplicationSettings.saveToSharedPreferences(this, "firstName", firstName);
-                            ApplicationSettings.saveToSharedPreferences(this, "lastName", lastName);
-                            ApplicationSettings.saveToSharedPreferences(this, "mobileNumber", mobileNumber);
+                            ApplicationSettings.saveToSharedPreferences(this, "firstName", this.firstName);
+                            ApplicationSettings.saveToSharedPreferences(this, "lastName", this.lastName);
+                            ApplicationSettings.saveToSharedPreferences(this, "mobileNumber", this.mobileNumber);
 
-                            ApplicationSettings.ownerFirstName=firstName;
-                            ApplicationSettings.ownerLastName=lastName;
-                            ApplicationSettings.ownerMobileNumber=mobileNumber;
+                            ApplicationSettings.farmerFirstName=firstName;
+                            ApplicationSettings.farmerLastName=lastName;
+                            ApplicationSettings.farmerMobileNumber=mobileNumber;
 
                             nextActivity();
                         }
                         else {
-                            //some code if success is false
+                            int errorCode=response.getInt("internalCode");
+                            if(errorCode== ErrorCode.VALIDATION_ERROR) {
+                            System.out.println(response.getString("message"));
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -153,7 +156,7 @@ public class PinActivity extends AppCompatActivity {
     System.out.println("****************************Generated PIN :"+pin);
         if(networkConnectivityManager.isConnected())
         {
-            addOwner();
+            addFarmer();
         }else {
             networkConnectivityManager.showNetworkConnectivityDialog();
         }

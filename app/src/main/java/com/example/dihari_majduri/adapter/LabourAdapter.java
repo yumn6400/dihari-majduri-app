@@ -8,12 +8,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.dihari_majduri.EditLabourActivity;
+import com.example.dihari_majduri.Activities.EditLabourActivity;
 import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.pojo.Labour;
 import java.util.List;
 
-public class LabourAdapter extends RecyclerView.Adapter<LabourAdapter.EmployeeViewHolder> {
+public class LabourAdapter extends RecyclerView.Adapter<LabourAdapter.LabourViewHolder> {
 
     private List<Labour> labourList;
     private Context context;
@@ -25,17 +25,17 @@ public class LabourAdapter extends RecyclerView.Adapter<LabourAdapter.EmployeeVi
 
     @NonNull
     @Override
-    public EmployeeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public LabourViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_labours, parent, false);
-        return new EmployeeViewHolder(view);
+        return new LabourViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EmployeeViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull LabourViewHolder holder, int position) {
         Labour labour = labourList.get(position);
-        holder.employeeName.setText(labour.getName());
-        holder.employeeMobile.setText(labour.getMobileNumber());
+        holder.labourName.setText(labour.getName());
+        holder.labourMobile.setText(labour.getMobileNumber());
     }
 
     @Override
@@ -43,20 +43,20 @@ public class LabourAdapter extends RecyclerView.Adapter<LabourAdapter.EmployeeVi
         return labourList.size();
     }
 
-    public  class EmployeeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public  class LabourViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView employeeName;
-        TextView employeeMobile;
+        TextView labourName;
+        TextView labourMobile;
 
-        public EmployeeViewHolder(@NonNull View itemView) {
+        public LabourViewHolder(@NonNull View itemView) {
             super(itemView);
-            employeeName = itemView.findViewById(R.id.employeeName);
-            employeeMobile = itemView.findViewById(R.id.employeeMobile);
+            labourName = itemView.findViewById(R.id.labourName);
+            labourMobile = itemView.findViewById(R.id.labourMobile);
             itemView.setOnClickListener(this);
         }
         @Override
         public void onClick(View v) {
-            System.out.println("***********Employee Adapter*******");
+            System.out.println("***********Labour Adapter*******");
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
                 Labour labour = labourList.get(position);

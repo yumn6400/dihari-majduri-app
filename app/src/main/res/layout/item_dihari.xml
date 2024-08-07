@@ -51,18 +51,18 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/employeeCount"
+            app:layout_constraintEnd_toStartOf="@id/labourCount"
             app:layout_constraintHorizontal_bias="0.006"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/employeeCount"
+            android:id="@+id/labourCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/_5sdp"
             android:layout_marginBottom="8dp"
             android:paddingBottom="@dimen/_2sdp"
-            android:text="Employees: 10"
+            android:text="Labours: 10"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"

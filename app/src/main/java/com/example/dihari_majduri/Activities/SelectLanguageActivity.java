@@ -1,4 +1,4 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +9,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.common.LocaleHelper;
 
 

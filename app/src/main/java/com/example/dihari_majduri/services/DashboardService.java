@@ -11,7 +11,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.dihari_majduri.DihariBottomSheetFragment;
+import com.example.dihari_majduri.Activities.DihariBottomSheetFragment;
 import com.example.dihari_majduri.adapter.DashboardAdapter;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkSettings;
@@ -56,7 +56,7 @@ public class DashboardService {
                 response->{
                     progressLayoutManager.hideProgressingView();
                     try {
-                        System.out.println("**********Employee Response :" + response);
+                        System.out.println("**********Labour Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
                         if ((boolean) jsonObject.get("success")) {
                             JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
@@ -106,7 +106,7 @@ public class DashboardService {
                 response->{
                     progressLayoutManager.hideProgressingView();
                     try {
-                        System.out.println("**********Employee Response :" + response);
+                        System.out.println("**********Labour Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
                         if ((boolean) jsonObject.get("success")) {
                             JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
@@ -147,44 +147,45 @@ public class DashboardService {
     }
     public void getAllLabourEmployments() {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
-        String url = NetworkSettings.LABOUR_EMPLOYMENT_PERIODS_SERVER + "/" + ApplicationSettings.ownerId;
+        String url = NetworkSettings.LABOUR_EMPLOYMENT_PERIODS_SERVER + "/" + ApplicationSettings.farmerId;
         progressLayoutManager.showProgressingView();
+
         StringRequest stringRequest = new StringRequest(
                 Request.Method.GET, url,
                 response -> {
                     progressLayoutManager.hideProgressingView();
                     try {
-                        System.out.println("**********Employee Response :" + response);
+                        System.out.println("**********Labour Response :" + response);
                         JSONObject jsonResponse = new JSONObject(response);
+
                         if (jsonResponse.getBoolean("success")) {
-                            JSONArray jsonArray = jsonResponse.getJSONArray("data");
-                            labourEmploymentPeriodList.clear();
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject job = jsonArray.getJSONObject(i);
-                                LabourEmploymentPeriod labourEmploymentPeriod = new LabourEmploymentPeriod();
-                                labourEmploymentPeriod.setDate(job.getString("date"));
-                                labourEmploymentPeriod.setCropName(job.getString("cropName"));
-                                labourEmploymentPeriod.setCropWorkTypeName(job.getString("cropWorkTypeName"));
-                                labourEmploymentPeriod.setLabourCount(job.getInt("labourCount"));
-                                JSONArray laboursArray = job.getJSONArray("labourPojo");
-                                List<Labour> laboursList = new ArrayList<>();
-                                for (int j = 0; j < laboursArray.length(); j++) {
-                                    JSONObject labourJson = laboursArray.getJSONObject(j);
-                                    Labour labourObj = new Labour();
-                                    labourObj.setId(labourJson.getInt("id"));
-                                    labourObj.setName(labourJson.getString("name"));
-                                    labourObj.setMobileNumber(labourJson.getString("mobileNumber"));
-                                    laboursList.add(labourObj);
-                                }
-                                labourEmploymentPeriod.setLabours(laboursList);
-                                labourEmploymentPeriodList.add(labourEmploymentPeriod);
+                            JSONObject dataObject = jsonResponse.getJSONObject("data");
+
+                            LabourEmploymentPeriod labourEmploymentPeriod = new LabourEmploymentPeriod();
+                            labourEmploymentPeriod.setDate(dataObject.getString("date"));
+                            labourEmploymentPeriod.setCropName(dataObject.getJSONObject("crop").getString("name"));
+                            labourEmploymentPeriod.setCropWorkTypeName(dataObject.getJSONObject("cropWorkType").getString("name"));
+                            labourEmploymentPeriod.setLabourCount(dataObject.getInt("labourCount"));
+
+                            JSONArray laboursArray = dataObject.getJSONArray("labours");
+                            List<Labour> laboursList = new ArrayList<>();
+                            for (int i = 0; i < laboursArray.length(); i++) {
+                                JSONObject labourJson = laboursArray.getJSONObject(i);
+                                Labour labourObj = new Labour();
+                                labourObj.setId(labourJson.getInt("id"));
+                                labourObj.setName(labourJson.getString("name"));
+                                labourObj.setMobileNumber(labourJson.getString("mobileNumber"));
+                                laboursList.add(labourObj);
                             }
+                            labourEmploymentPeriod.setLabours(laboursList);
+                            labourEmploymentPeriodList.clear();
+                            labourEmploymentPeriodList.add(labourEmploymentPeriod);
                             setDashboardEmploymentPeriod(labourEmploymentPeriodList);
                         } else {
-                            // some taks on success is false
+                            // Handle case when success is false
                         }
                     } catch (Exception e) {
-                        System.out.println(e);
+                        e.printStackTrace(); // Better to use e.printStackTrace() for detailed logging
                     }
                 },
                 error -> {
@@ -199,47 +200,46 @@ public class DashboardService {
                 return params;
             }
         };
+
         stringRequest.setRetryPolicy(NetworkSettings.requestPolicy);
         requestQueue.add(stringRequest);
     }
 
-    public void getAllLabours()
-    {
+    public void getAllLabours() {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         progressLayoutManager.showProgressingView();
-        String url = NetworkSettings.LABOUR_SERVER+"/"+ ApplicationSettings.ownerId;
-        StringRequest stringRequest=new StringRequest(
+        String url = NetworkSettings.LABOUR_SERVER + "/farmerId/" + ApplicationSettings.farmerId;
+
+        StringRequest stringRequest = new StringRequest(
                 Request.Method.GET, url,
-                response->{
+                response -> {
                     progressLayoutManager.hideProgressingView();
                     try {
-                        System.out.println("**********Employee Response :" + response);
+                        System.out.println("**********Labour Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
-                        if ((boolean) jsonObject.get("success")) {
-                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
-                            JSONObject job;
-                            Labour labour;
-                            for (int i = 0; i < jsonArray.length(); i++)
-                            {
-                                job = (JSONObject) jsonArray.get(i);
-                                labour =new Labour();
+
+                        if (jsonObject.getBoolean("success")) {
+                           // JSONObject dataObject = jsonObject.getJSONObject("data");
+                            Object data = jsonObject.get("data");
+                            JSONArray jsonArray = (JSONArray) data;
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject job = jsonArray.getJSONObject(i);
+                                Labour labour = new Labour();
                                 labour.setId(job.getInt("id"));
                                 labour.setName(job.getString("name"));
                                 labour.setMobileNumber(job.getString("mobileNumber"));
-                                laboursList.add(labour);
+                                this.laboursList.add(labour);
                             }
                             DihariBottomSheetFragment.setLabours(laboursList);
+                        } else {
+                            // Handle case when success is false
                         }
-                        else {
-                            // some task on success is false
-                        }
-                    }catch(Exception e)
-                    {
-                        System.out.println(e);
+                    } catch (Exception e) {
+                        e.printStackTrace(); // Better to use e.printStackTrace() for detailed logging
                     }
                 },
-                error-> {
-                    System.out.println("**********Response Error:"+error);
+                error -> {
+                    System.out.println("**********Response Error:" + error);
                     generateServerError(error);
                 }
         ) {
@@ -250,9 +250,11 @@ public class DashboardService {
                 return params;
             }
         };
+
         stringRequest.setRetryPolicy(NetworkSettings.requestPolicy);
         requestQueue.add(stringRequest);
     }
+
 
     public  void saveNewLabourInformation(String crop, String cropWorkType, String date, List<Labour> selectedLabours) {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
@@ -266,7 +268,7 @@ public class DashboardService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String url = NetworkSettings.LABOUR_EMPLOYMENT_PERIODS_SERVER+"/"+ ApplicationSettings.ownerId;
+        String url = NetworkSettings.LABOUR_EMPLOYMENT_PERIODS_SERVER+"/"+ ApplicationSettings.farmerId;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST, url, entityJSON,
                 response -> {

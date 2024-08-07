@@ -26,12 +26,13 @@
         android:textSize="16sp" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutEmployee"
+        android:id="@+id/textInputLayoutLabour"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp"
+        android:paddingStart="8sp"
         android:hint="Select Labour">
         <MultiAutoCompleteTextView
-            android:id="@+id/multiAutoCompleteTextViewEmployee"
+            android:id="@+id/multiAutoCompleteTextViewLabour"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="text" />

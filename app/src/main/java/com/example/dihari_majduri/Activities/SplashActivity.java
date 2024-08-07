@@ -1,4 +1,4 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.ProgressLayoutManager;
 
@@ -44,10 +46,10 @@ public class SplashActivity extends AppCompatActivity {
             finish();
         }
         else {
-            ApplicationSettings.ownerFirstName=ApplicationSettings.getValueFromSharedPreferences(this,"firstName");
-            ApplicationSettings.ownerLastName=ApplicationSettings.getValueFromSharedPreferences(this,"lastName");
-            ApplicationSettings.ownerMobileNumber=ApplicationSettings.getValueFromSharedPreferences(this,"mobileNumber");
-            ApplicationSettings.ownerId= Integer.parseInt(ApplicationSettings.getValueFromSharedPreferences(this,"id"));
+            ApplicationSettings.farmerFirstName=ApplicationSettings.getValueFromSharedPreferences(this,"firstName");
+            ApplicationSettings.farmerLastName=ApplicationSettings.getValueFromSharedPreferences(this,"lastName");
+            ApplicationSettings.farmerMobileNumber=ApplicationSettings.getValueFromSharedPreferences(this,"mobileNumber");
+            ApplicationSettings.farmerId= Integer.parseInt(ApplicationSettings.getValueFromSharedPreferences(this,"id"));
             Intent intent1 = new Intent(SplashActivity.this, LoginActivity.class);
             startActivity(intent1);
             finish();

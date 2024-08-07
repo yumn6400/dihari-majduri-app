@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DashboardLabourActivity">
+    tools:context=".Activities.DashboardLabourActivity">
 
     <!--<include
         android:id="@+id/includedToolbar"
@@ -61,13 +61,13 @@
         tools:listitem="@layout/item_dashboard_labours" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/addEmployee"
+        android:id="@+id/addLabour"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
-        android:contentDescription="Add Employee"
+        android:contentDescription="Add Labour"
         android:drawableStart="@drawable/add_symbol"
-        android:text="Add Employee"
+        android:text="Add Labour"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

@@ -1,6 +1,5 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,11 +15,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.common.NetworkSettings;
-import com.example.dihari_majduri.pojo.Labour;
-import com.example.dihari_majduri.pojo.Owner;
+import com.example.dihari_majduri.pojo.Farmer;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -32,12 +31,12 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private TextView firstNameTextView;
     private TextView lastNameTextView;
-    private TextView mobileNumberTextView;
+
 
     private String firstName;
     private String lastName;
     private String mobileNumber;
-    private TextView errorMessage;
+
     private Button saveButton;
     private NetworkConnectivityManager networkConnectivityManager;
     @Override
@@ -58,13 +57,9 @@ public class EditProfileActivity extends AppCompatActivity {
     {
         firstNameTextView= findViewById(R.id.firstName);
         lastNameTextView=findViewById(R.id.lastName);
-        mobileNumberTextView=findViewById(R.id.mobileNumber);
-        firstNameTextView.setText(ApplicationSettings.ownerFirstName);
-        lastNameTextView.setText(ApplicationSettings.ownerLastName);
-        mobileNumberTextView.setText(ApplicationSettings.ownerMobileNumber);
+        firstNameTextView.setText(ApplicationSettings.farmerFirstName);
+        lastNameTextView.setText(ApplicationSettings.farmerLastName);
         saveButton= findViewById(R.id.saveButton);
-        errorMessage=findViewById(R.id.errorMessage);
-        errorMessage.setVisibility(View.INVISIBLE);
         TextView activityName = findViewById(R.id.tvActivityName);
         activityName.setText("Edit Profile");
         ImageView backArrow = findViewById(R.id.ivToolbarBack);
@@ -74,72 +69,27 @@ public class EditProfileActivity extends AppCompatActivity {
     private void setListener()
     {
         saveButton.setOnClickListener(view -> {
-            errorMessage.setVisibility(View.INVISIBLE);
             firstName=firstNameTextView.getText().toString().trim();
             lastName=lastNameTextView.getText().toString().trim();
-            mobileNumber=mobileNumberTextView.getText().toString().trim();
             System.out.println("***************First name : "+firstName);
             System.out.println("*************Last Name : "+lastName);
             System.out.println("******************Mobile number :"+mobileNumber);
             networkConnectivityManager=new NetworkConnectivityManager(this,this);
             if(networkConnectivityManager.isConnected())
             {
-                checkMobileNumberExists(mobileNumber);
+                editFarmerProfile();
             }else {
                 networkConnectivityManager.showNetworkConnectivityDialog();
             }
         });
     }
 
-    public void checkMobileNumberExists(String mobileNumber)
-    {
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url = NetworkSettings.OWNER_SERVER+"/existsByMobileNumber/"+mobileNumber;
-        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(
-                Request.Method.GET, url,null,
-                response->{
-                    try {
-                        System.out.println(response);
-                        if(response.getBoolean("success")==true) {
-                            boolean exists = response.getBoolean("data");
-                            if (exists) {
-                                errorMessage.setVisibility(View.VISIBLE);
-                            } else {
-                                editOwnerProfile();
-                            }
-                        }
-                        else {
-                            // Some task if request is not successful
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
-                },
-                error-> {
-                    System.out.println("**********Response Error:"+error);
-                    generateServerError(error);
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json");
-                return params;
-            }
-        };
-        jsonObjectRequest.setRetryPolicy(NetworkSettings.requestPolicy);
-        requestQueue.add(jsonObjectRequest);
-    }
-    private void generateServerError(VolleyError error) {
-        // Handle the error response here
-        error.printStackTrace();
-    }
 
-    public void editOwnerProfile() {
+    public void editFarmerProfile() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        Owner owner = new Owner(ApplicationSettings.ownerId,this.firstName, this.lastName, this.mobileNumber);
+        Farmer farmer = new Farmer(ApplicationSettings.farmerId,this.firstName, this.lastName, ApplicationSettings.farmerMobileNumber);
         Gson gson = new Gson();
-        String entityJSONString = gson.toJson(owner);
+        String entityJSONString = gson.toJson(farmer);
         System.out.println("*******JSON STRING :" + entityJSONString);
         JSONObject entityJSON = null;
         try {
@@ -147,7 +97,7 @@ public class EditProfileActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String url = NetworkSettings.OWNER_SERVER;
+        String url = NetworkSettings.FARMER_SERVER;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.PUT,
                 url,
@@ -159,11 +109,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
                             ApplicationSettings.saveToSharedPreferences(this, "firstName", this.firstName);
                             ApplicationSettings.saveToSharedPreferences(this, "lastName", this.lastName);
-                            ApplicationSettings.saveToSharedPreferences(this, "mobileNumber", this.mobileNumber);
-
-                            ApplicationSettings.ownerFirstName=this.firstName;
-                            ApplicationSettings.ownerLastName=this.lastName;
-                            ApplicationSettings.ownerMobileNumber=this.mobileNumber;
+                            ApplicationSettings.farmerFirstName=this.firstName;
+                            ApplicationSettings.farmerLastName=this.lastName;
 
                             nextActivity();
                         }
@@ -176,7 +123,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 },
                 error -> {
                     System.out.println("**********Response Error:" + error.toString());
-                    generateServerError(error);
                 }
         ) {
             @Override

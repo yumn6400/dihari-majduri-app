@@ -1,4 +1,4 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +18,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.adapter.LabourAdapter;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
@@ -25,13 +26,10 @@ import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.common.ProgressLayoutManager;
 import com.example.dihari_majduri.pojo.Labour;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,10 +37,10 @@ import java.util.Map;
 
 
 public class LabourActivity extends AppCompatActivity  {
-    private ExtendedFloatingActionButton addEmployee;
+    private ExtendedFloatingActionButton addLabour;
     private RecyclerView recyclerView;
     private TextView homeButton ;
-    private TextView employeeButton;
+    private TextView labourButton;
     private TextView moreButton;
     private ProgressLayoutManager progressLayoutManager;
     private List<Labour> labours;
@@ -67,7 +65,7 @@ public class LabourActivity extends AppCompatActivity  {
         labours =new ArrayList<>();
         recyclerView=findViewById(R.id.recyclerView);
         homeButton= findViewById(R.id.homeButton);
-        employeeButton= findViewById(R.id.employeeButton);
+        labourButton= findViewById(R.id.labourButton);
         moreButton= findViewById(R.id.moreButton);
         networkConnectivityManager=new NetworkConnectivityManager(this,this);
         progressLayoutManager=new ProgressLayoutManager(this,this);
@@ -75,8 +73,8 @@ public class LabourActivity extends AppCompatActivity  {
 
     private void setListener()
     {
-        employeeButton.setOnClickListener(view -> {
-            Toast.makeText(LabourActivity.this, "Employee Clicked", Toast.LENGTH_SHORT).show();
+        labourButton.setOnClickListener(view -> {
+            Toast.makeText(LabourActivity.this, "Labour Clicked", Toast.LENGTH_SHORT).show();
         });
         homeButton.setOnClickListener(view-> {
             Intent intent1 = new Intent(LabourActivity.this, DashboardActivity.class);
@@ -87,8 +85,8 @@ public class LabourActivity extends AppCompatActivity  {
         {
             Toast.makeText(LabourActivity.this, "More Clicked", Toast.LENGTH_SHORT).show();
         });
-        addEmployee = findViewById(R.id.addEmployee);
-        addEmployee.setOnClickListener(view -> {
+        addLabour = findViewById(R.id.addLabour);
+        addLabour.setOnClickListener(view -> {
             // Network call to check mobile number already exists or not
             Intent intent1 = new Intent(LabourActivity.this, AddLabourActivity.class);
             startActivity(intent1);
@@ -112,50 +110,46 @@ public class LabourActivity extends AppCompatActivity  {
         }
 
     }
-    public void setEmployeesData(List<Labour> list)
+    public void setLaboursData(List<Labour> list)
     {
         LabourAdapter labourAdapter = new LabourAdapter(this,list);
         recyclerView.setLayoutManager(new LinearLayoutManager(LabourActivity.this));
         recyclerView.setAdapter(labourAdapter);
     }
-    public void getAllLabours()
-    {
+    public void getAllLabours() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         progressLayoutManager.showProgressingView();
-        // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_SERVER+"/"+ ApplicationSettings.ownerId;
-        // Create a JsonObjectRequest
-        StringRequest stringRequest=new StringRequest(
+        String url = NetworkSettings.LABOUR_SERVER + "/farmerId/" + ApplicationSettings.farmerId;
+
+        StringRequest stringRequest = new StringRequest(
                 Request.Method.GET, url,
-                response->{
+                response -> {
                     progressLayoutManager.hideProgressingView();
                     try {
-                        System.out.println("**********Employee Response :" + response);
+                        System.out.println("**********Labour Response :" + response);
                         JSONObject jsonObject = new JSONObject(response);
                         this.labours.clear();
-                        if ((boolean) jsonObject.get("success")) {
-                            JSONArray jsonArray = new JSONArray(String.valueOf(jsonObject.get("data")));
-                            JSONObject job;
-                            Labour labour;
-                            for (int i = 0; i < jsonArray.length(); i++)
-                            {
-                                job = (JSONObject) jsonArray.get(i);
-                                labour =new Labour();
+
+                        if (jsonObject.getBoolean("success")) {
+                           // JSONObject dataObject = jsonObject.getJSONObject("data");
+                            Object data = jsonObject.get("data");
+                             JSONArray jsonArray = (JSONArray) data;
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject job = jsonArray.getJSONObject(i);
+                                Labour labour = new Labour();
                                 labour.setId(job.getInt("id"));
                                 labour.setName(job.getString("name"));
                                 labour.setMobileNumber(job.getString("mobileNumber"));
                                 this.labours.add(labour);
                             }
-                            setEmployeesData(this.labours);
+                            setLaboursData(this.labours);
                         }
-                    }catch(Exception e)
-                    {
-                        System.out.println(e);
+                    } catch (Exception e) {
+                        e.printStackTrace(); // More detailed error logging
                     }
-
                 },
-                error-> {
-                    System.out.println("**********Response Error:"+error);
+                error -> {
+                    System.out.println("**********Response Error:" + error);
                     generateServerError(error);
                 }
         ) {
@@ -166,11 +160,11 @@ public class LabourActivity extends AppCompatActivity  {
                 return params;
             }
         };
-        // Set retry policy
+
         stringRequest.setRetryPolicy(NetworkSettings.requestPolicy);
-        // Add the request to the RequestQueue
         requestQueue.add(stringRequest);
     }
+
 
     // Method to handle server errors
     private void generateServerError(VolleyError error) {

@@ -2,14 +2,14 @@ package com.example.dihari_majduri.pojo;
 
 public class CropWorkDetails {
     private String date;
-    private int employeeCount;
+    private int labourCount;
     private String cropName;
     private String cropWorkType;
 
     // Constructor
-    public CropWorkDetails(String date, int employeeCount, String cropName, String cropWorkType) {
+    public CropWorkDetails(String date, int labourCount, String cropName, String cropWorkType) {
         this.date = date;
-        this.employeeCount = employeeCount;
+        this.labourCount = labourCount;
         this.cropName = cropName;
         this.cropWorkType = cropWorkType;
     }
@@ -23,12 +23,12 @@ public class CropWorkDetails {
         this.date = date;
     }
 
-    public int getEmployeeCount() {
-        return employeeCount;
+    public int getLabourCount() {
+        return labourCount;
     }
 
-    public void setEmployeeCount(int employeeCount) {
-        this.employeeCount = employeeCount;
+    public void setLabourCount(int labourCount) {
+        this.labourCount = labourCount;
     }
 
     public String getCropName() {
@@ -52,7 +52,7 @@ public class CropWorkDetails {
     public String toString() {
         return "CropWorkDetails{" +
                 "date='" + date + '\'' +
-                ", employeeCount=" + employeeCount +
+                ", labourCount=" + labourCount +
                 ", cropName='" + cropName + '\'' +
                 ", cropWorkType='" + cropWorkType + '\'' +
                 '}';

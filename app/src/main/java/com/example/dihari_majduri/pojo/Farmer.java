@@ -1,6 +1,6 @@
 package com.example.dihari_majduri.pojo;
 
-public class Owner {
+public class Farmer {
     private int id;
     private String firstName;
     private String lastName;
@@ -8,7 +8,7 @@ public class Owner {
     private String pin;
 
     // Constructor
-    public Owner( String firstName, String lastName, String mobileNumber, String pin) {
+    public Farmer(String firstName, String lastName, String mobileNumber, String pin) {
 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -16,7 +16,7 @@ public class Owner {
         this.pin = pin;
     }
 
-    public Owner(int id ,String firstName, String lastName, String mobileNumber) {
+    public Farmer(int id , String firstName, String lastName, String mobileNumber) {
         this.id=id;
         this.firstName = firstName;
         this.lastName = lastName;

@@ -1,4 +1,4 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,10 +17,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.common.NetworkSettings;
-import com.example.dihari_majduri.network.pojo.LabourRequest;
 import com.example.dihari_majduri.pojo.Labour;
 import com.google.gson.Gson;
 
@@ -29,28 +29,23 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EditLabourActivity extends AppCompatActivity {
-    private Button saveButton;
-    private TextView nameTextView;
-    private TextView mobileNumberTextView;
-    private String name;
-    private String mobileNumber;
-    private NetworkConnectivityManager networkConnectivityManager;
-    private int id;
+public class AddLabourActivity extends AppCompatActivity {
+private Button saveButton;
+private TextView nameTextView;
+private TextView mobileNumberTextView;
+private String name;
+private NetworkConnectivityManager networkConnectivityManager;
+private String mobileNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_edit_labour);
+        setContentView(R.layout.activity_add_labour);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Intent intent=getIntent();
-        this.id= intent.getIntExtra("id",0);
-        this.name=intent.getStringExtra("name");
-        this.mobileNumber=intent.getStringExtra("mobileNumber");
         initComponent();
     }
 
@@ -59,12 +54,10 @@ public class EditLabourActivity extends AppCompatActivity {
         networkConnectivityManager=new NetworkConnectivityManager(this,this);
         nameTextView=findViewById(R.id.name);
         mobileNumberTextView=findViewById(R.id.mobileNumber);
-        nameTextView.setText(this.name);
-        mobileNumberTextView.setText(mobileNumber);
         ImageView backArrow = findViewById(R.id.ivToolbarBack);
         backArrow.setOnClickListener(view -> finish());
         TextView activityName = findViewById(R.id.tvActivityName);
-        activityName.setText("Edit Employee");
+        activityName.setText("Add Labour");
         saveButton=findViewById(R.id.saveButton);
         saveButton.setOnClickListener(view -> {
             name=nameTextView.getText().toString().trim();
@@ -74,23 +67,24 @@ public class EditLabourActivity extends AppCompatActivity {
 
             if(networkConnectivityManager.isConnected())
             {
-                updateLabour();
+                addNewLabour();
             }else {
                 networkConnectivityManager.showNetworkConnectivityDialog();
             }
 
-            // Network call to check mobile number already exists or not
-            Intent intent1 = new Intent(EditLabourActivity.this, LabourActivity.class);
+
+            Intent intent1 = new Intent(AddLabourActivity.this, LabourActivity.class);
             startActivity(intent1);
             finish();
         });
     }
 
-    public void updateLabour()
+    public void addNewLabour()
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Create an Employer object
-        Labour labour=new Labour(this.id , this.name,  this.mobileNumber);
+        Labour labour=new Labour(this.name,  this.mobileNumber);
+
         // Serialize the Employer object to JSON
         Gson gson = new Gson();
         String entityJSONString = gson.toJson(labour);
@@ -103,10 +97,10 @@ public class EditLabourActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         // Define the URL to send the request to
-        String url = NetworkSettings.LABOUR_SERVER;
+        String url = NetworkSettings.LABOUR_SERVER+"/"+ApplicationSettings.farmerId;
         // Create a JsonObjectRequest
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.PUT, url, entityJSON,
+                Request.Method.POST, url, entityJSON,
                 response->{
                     System.out.println("**********Response :"+response);
                     // Handle the server's response here

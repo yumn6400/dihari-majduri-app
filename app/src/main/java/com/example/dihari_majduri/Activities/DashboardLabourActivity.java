@@ -1,4 +1,4 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,37 +13,25 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.adapter.DashboardLabourAdapter;
-import com.example.dihari_majduri.adapter.LabourAdapter;
-import com.example.dihari_majduri.common.ApplicationSettings;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
-import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.common.ProgressLayoutManager;
 import com.example.dihari_majduri.pojo.Labour;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class DashboardLabourActivity extends AppCompatActivity  {
-    private ExtendedFloatingActionButton addEmployee;
+    private ExtendedFloatingActionButton addLabour;
     private RecyclerView recyclerView;
     private TextView homeButton ;
-    private TextView employeeButton;
+    private TextView labourButton;
     private TextView moreButton;
     private ProgressLayoutManager progressLayoutManager;
     private List<Labour> labour;
@@ -75,7 +63,7 @@ public class DashboardLabourActivity extends AppCompatActivity  {
 
             if(networkConnectivityManager.isConnected())
             {
-                setEmployeesData(labour);
+                setLaboursData(labour);
             }else {
                 networkConnectivityManager.showNetworkConnectivityDialog();
             }
@@ -88,12 +76,12 @@ public class DashboardLabourActivity extends AppCompatActivity  {
         labour =new ArrayList<>();
         recyclerView=findViewById(R.id.recyclerView);
         homeButton= findViewById(R.id.homeButton);
-        employeeButton= findViewById(R.id.employeeButton);
+        labourButton= findViewById(R.id.labourButton);
         moreButton= findViewById(R.id.moreButton);
         networkConnectivityManager=new NetworkConnectivityManager(this,this);
         progressLayoutManager=new ProgressLayoutManager(this,this);
-        employeeButton.setOnClickListener(view -> {
-            Toast.makeText(DashboardLabourActivity.this, "Employee Clicked", Toast.LENGTH_SHORT).show();
+        labourButton.setOnClickListener(view -> {
+            Toast.makeText(DashboardLabourActivity.this, "Labour Clicked", Toast.LENGTH_SHORT).show();
         });
 
         homeButton.setOnClickListener(view-> {
@@ -106,8 +94,8 @@ public class DashboardLabourActivity extends AppCompatActivity  {
         {
             Toast.makeText(DashboardLabourActivity.this, "More Clicked", Toast.LENGTH_SHORT).show();
         });
-        addEmployee = findViewById(R.id.addEmployee);
-        addEmployee.setOnClickListener(view -> {
+        addLabour = findViewById(R.id.addLabour);
+        addLabour.setOnClickListener(view -> {
             // Network call to check mobile number already exists or not
             Intent intent1 = new Intent(DashboardLabourActivity.this, AddLabourActivity.class);
             startActivity(intent1);
@@ -123,10 +111,10 @@ public class DashboardLabourActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
-        setEmployeesData(labour);
+        setLaboursData(labour);
     }
 
-    public void setEmployeesData(List<Labour> list)
+    public void setLaboursData(List<Labour> list)
     {
         DashboardLabourAdapter dashboardLabourAdapter = new DashboardLabourAdapter(this,list);
         recyclerView.setLayoutManager(new LinearLayoutManager(DashboardLabourActivity.this));

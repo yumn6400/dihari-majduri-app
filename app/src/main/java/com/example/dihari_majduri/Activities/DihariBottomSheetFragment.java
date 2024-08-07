@@ -1,4 +1,4 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.android.volley.VolleyError;
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.pojo.CropWorkType;
 import com.example.dihari_majduri.pojo.Labour;
@@ -41,14 +42,14 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
     private Spinner spinnerCrop;
     private Spinner spinnerCropWorkType;
     private TextView textViewSelectDate;
-    private TextInputLayout textInputLayoutEmployee;
-    private MultiAutoCompleteTextView multiAutoCompleteTextViewEmployee;
+    private TextInputLayout textInputLayoutLabour;
+    private MultiAutoCompleteTextView multiAutoCompleteTextViewLabour;
     private static List<String> cropsNameArray = new ArrayList<>();
     private static List<String> cropWorkTypesNameArray = new ArrayList<>();
     private static List<String> laboursNameArray =new ArrayList<>();
     private static List<Labour> laboursList=new ArrayList<>();
     private Button buttonSave;
-    private Set<String> employeesSet;
+    private Set<String> laboursSet;
     private NetworkConnectivityManager networkConnectivityManager;
     private Context context;
     private Activity activity;
@@ -78,8 +79,8 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
         spinnerCropWorkType = view.findViewById(R.id.spinnerCropWorkType);
         textViewSelectDate = view.findViewById(R.id.textViewSelectDate);
         buttonSave = view.findViewById(R.id.buttonSave);
-        textInputLayoutEmployee = view.findViewById(R.id.textInputLayoutEmployee);
-        multiAutoCompleteTextViewEmployee = view.findViewById(R.id.multiAutoCompleteTextViewEmployee);
+        textInputLayoutLabour = view.findViewById(R.id.textInputLayoutLabour);
+        multiAutoCompleteTextViewLabour = view.findViewById(R.id.multiAutoCompleteTextViewLabour);
         networkConnectivityManager=new NetworkConnectivityManager(context,activity);
         ArrayAdapter<String> cropAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, cropsNameArray);
         cropAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -87,13 +88,13 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
         ArrayAdapter<String> cropWorkTypeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, cropWorkTypesNameArray);
         cropWorkTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCropWorkType.setAdapter(cropWorkTypeAdapter);
-        ArrayAdapter<String> employeeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, laboursNameArray);
-        multiAutoCompleteTextViewEmployee.setAdapter(employeeAdapter);
-        multiAutoCompleteTextViewEmployee.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-        multiAutoCompleteTextViewEmployee.addTextChangedListener(new SearchEmployeeListener());
-        employeesSet = new HashSet<>();
-        for (String employee : laboursNameArray) {
-            employeesSet.add(employee.toLowerCase());
+        ArrayAdapter<String> labourAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, laboursNameArray);
+        multiAutoCompleteTextViewLabour.setAdapter(labourAdapter);
+        multiAutoCompleteTextViewLabour.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        multiAutoCompleteTextViewLabour.addTextChangedListener(new SearchLabourListener());
+        laboursSet = new HashSet<>();
+        for (String labour : laboursNameArray) {
+            laboursSet.add(labour.toLowerCase());
         }
     }
     private void setListener()
@@ -111,9 +112,9 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
                 String crop = spinnerCrop.getSelectedItem().toString();
                 String cropWorkType = spinnerCropWorkType.getSelectedItem().toString();
                 String date = textViewSelectDate.getText().toString();
-                String employee = multiAutoCompleteTextViewEmployee.getText().toString();
+                String labour = multiAutoCompleteTextViewLabour.getText().toString();
 
-                if (crop.isEmpty() || cropWorkType.isEmpty() || date.isEmpty() || date.equalsIgnoreCase("Select Date") || employee.isEmpty()) {
+                if (crop.isEmpty() || cropWorkType.isEmpty() || date.isEmpty() || date.equalsIgnoreCase("Select Date") || labour.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
                 } else {
                     // Handle the save action
@@ -123,9 +124,9 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
                 System.out.println("crop :"+crop);
                 System.out.println("Crop work type :"+cropWorkType);
                 System.out.println("Date :"+date);
-                System.out.println("Employee :"+employee);
-                // saveInformation(crop,cropWorkType,date,employee);
-                List<Labour> selectedLabours = getSelectedLabours(employee, laboursList);
+                System.out.println("Labour :"+labour);
+                // saveInformation(crop,cropWorkType,date,labour);
+                List<Labour> selectedLabours = getSelectedLabours(labour, laboursList);
 
                 if(networkConnectivityManager.isConnected())
                 {
@@ -152,8 +153,8 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
                 }, year, month, day);
         datePickerDialog.show();
     }
-    private List<Labour> getSelectedLabours(String employeeNames, List<Labour> labourList) {
-        StringTokenizer tokenizer = new StringTokenizer(employeeNames, ", ");
+    private List<Labour> getSelectedLabours(String labourNames, List<Labour> labourList) {
+        StringTokenizer tokenizer = new StringTokenizer(labourNames, ", ");
         Map<String, Labour> labourMap = new HashMap<>();
 
         for (Labour labour : labourList) {
@@ -200,13 +201,13 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
             laboursNameArray.add(labour.getName());
         }
     }
-    public class SearchEmployeeListener implements TextWatcher {
+    public class SearchLabourListener implements TextWatcher {
 
-        public SearchEmployeeListener() {
+        public SearchLabourListener() {
         }
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            textInputLayoutEmployee.setError(null); // Clear error message
+            textInputLayoutLabour.setError(null); // Clear error message
         }
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -217,19 +218,19 @@ public class DihariBottomSheetFragment extends BottomSheetDialogFragment {
             for (String word : inputArray) {
                 word = word.trim();
                 if (!word.isEmpty()) {
-                    for (String employee : employeesSet) {
-                        if (employee.contains(word)) {
+                    for (String labour : laboursSet) {
+                        if (labour.contains(word)) {
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        textInputLayoutEmployee.setError("Employee not found");
+                        textInputLayoutLabour.setError("Labour not found");
                         return;
                     }
                 }
             }
-            textInputLayoutEmployee.setError(null);
+            textInputLayoutLabour.setError(null);
         }
         @Override
         public void afterTextChanged(Editable editable) {

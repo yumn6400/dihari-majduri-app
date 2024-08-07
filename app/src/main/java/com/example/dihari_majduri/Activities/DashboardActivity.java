@@ -1,4 +1,4 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,9 +11,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.dihari_majduri.R;
+import com.example.dihari_majduri.services.DashboardService;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.common.ProgressLayoutManager;
-import com.example.dihari_majduri.services.DashboardService;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -23,7 +25,7 @@ public class DashboardActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ExtendedFloatingActionButton addNewDihari;
     private TextView homeButton ;
-    private TextView employeeButton;
+    private TextView labourButton;
     private TextView moreButton;
 
     private NetworkConnectivityManager networkConnectivityManager;
@@ -58,7 +60,7 @@ public class DashboardActivity extends AppCompatActivity {
         recyclerView=findViewById(R.id.recyclerView);
         addNewDihari = findViewById(R.id.addNewDihari);
         homeButton= findViewById(R.id.homeButton);
-        employeeButton= findViewById(R.id.employeeButton);
+        labourButton= findViewById(R.id.labourButton);
         moreButton= findViewById(R.id.moreButton);
         navigationView = findViewById(R.id.nav_view);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -79,7 +81,7 @@ public class DashboardActivity extends AppCompatActivity {
         addNewDihari.setOnClickListener(view -> {
             openBottomSheet();
         });
-        employeeButton.setOnClickListener(view -> {
+        labourButton.setOnClickListener(view -> {
             Intent intent1 = new Intent(DashboardActivity.this, LabourActivity.class);
             startActivity(intent1);
             finish();

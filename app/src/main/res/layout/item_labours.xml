@@ -16,12 +16,12 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/employeeName"
+            android:id="@+id/labourName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
             android:paddingBottom="4dp"
-            android:text="Employee Name"
+            android:text="Labour Name"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -42,12 +42,12 @@
             android:textColor="@color/black"
             android:layout_marginStart="@dimen/_5sdp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/employeeName"
+            app:layout_constraintStart_toEndOf="@id/labourName"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.5" />
 
         <TextView
-            android:id="@+id/employeeMobile"
+            android:id="@+id/labourMobile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:paddingTop="4dp"
@@ -57,7 +57,7 @@
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/employeeName" />
+            app:layout_constraintTop_toBottomOf="@id/labourName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

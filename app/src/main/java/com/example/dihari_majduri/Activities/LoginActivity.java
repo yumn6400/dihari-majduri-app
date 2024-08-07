@@ -1,4 +1,4 @@
-package com.example.dihari_majduri;
+package com.example.dihari_majduri.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +18,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dihari_majduri.R;
 import com.example.dihari_majduri.common.ApplicationSettings;
+import com.example.dihari_majduri.common.ErrorCode;
 import com.example.dihari_majduri.common.NetworkConnectivityManager;
 import com.example.dihari_majduri.common.NetworkSettings;
 import com.example.dihari_majduri.network.pojo.LoginRequest;
@@ -81,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
     public void verifyPin(String pinStr)
     {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        LoginRequest loginRequest = new LoginRequest(ApplicationSettings.ownerMobileNumber, pinStr);
+        LoginRequest loginRequest = new LoginRequest(ApplicationSettings.farmerMobileNumber, pinStr);
         Gson gson = new Gson();
         String entityJSONString = gson.toJson(loginRequest);
         System.out.println("*******JSON STRING :"+entityJSONString);
@@ -92,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String url = NetworkSettings.OWNER_SERVER+"/validateOwnerPin";
+        String url = NetworkSettings.FARMER_SERVER+"/validateFarmerPin";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST, url, entityJSON,
                 response->{
@@ -103,7 +105,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            errorMessage.setVisibility(TextView.VISIBLE);
+                            int errorCode=response.getInt("internalCode");
+                            if(errorCode== ErrorCode.MOBILE_NUMBER_NOT_EXISTS) {
+                                System.out.println(response.getString("message"));
+                            }else if(errorCode== ErrorCode.NOT_AUTHENTICATE) {
+                                System.out.println(response.getString("message"));
+                                errorMessage.setVisibility(TextView.VISIBLE);
+                            }
                         }
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
